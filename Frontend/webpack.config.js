@@ -8,13 +8,13 @@ const webpackConfig = {
   mode: NODE_ENV,
 
   entry: {
-    app: join(__dirname, "./src/main.js")
+    app: join(__dirname, "./src/main.js"),
   },
 
   output: {
     path: join(__dirname, "./dist"),
     publicPath: "/dist/",
-    filename: "build.js"
+    filename: "build.js",
   },
 
   plugins: [new VueLoaderPlugin()],
@@ -23,15 +23,19 @@ const webpackConfig = {
     rules: [
       {
         test: /\.css$/,
-        use: ["vue-style-loader", "css-loader"]
+        use: ["vue-style-loader", "css-loader"],
       },
       {
         test: /\.scss$/,
-        use: ["vue-style-loader", "css-loader", "sass-loader"]
+        use: ["vue-style-loader", "css-loader", "sass-loader"],
       },
       {
         test: /\.sass$/,
-        use: ["vue-style-loader", "css-loader", "sass-loader?indentedSyntax"]
+        use: ["vue-style-loader", "css-loader", "sass-loader?indentedSyntax"],
+      },
+      {
+        test: /\.less$/,
+        use: ["vue-style-loader", "css-loader", "less-loader"],
       },
       {
         test: /\.vue$/,
@@ -45,39 +49,39 @@ const webpackConfig = {
             sass: [
               "vue-style-loader",
               "css-loader",
-              "sass-loader?indentedSyntax"
-            ]
+              "sass-loader?indentedSyntax",
+            ],
           },
           // other vue-loader options go here
           postLoaders: { html: "babel-loader" },
-          excludedPreLoaders: /(eslint-loader)/
-        }
+          excludedPreLoaders: /(eslint-loader)/,
+        },
       },
       {
         test: /\.js$/,
         loader: "babel-loader",
-        exclude: /node_modules/
+        exclude: /node_modules/,
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
         loader: "file-loader",
         options: {
-          name: "[name].[ext]?[hash]"
-        }
-      }
-    ]
+          name: "[name].[ext]?[hash]",
+        },
+      },
+    ],
   },
 
   resolve: {
     alias: {
-      vue$: "vue/dist/vue.esm.js"
+      vue$: "vue/dist/vue.esm.js",
     },
-    extensions: ["*", ".js", ".vue", ".json"]
+    extensions: ["*", ".js", ".vue", ".json"],
   },
 
   performance: {
-    hints: false
-  }
+    hints: false,
+  },
 };
 
 // SECTION NPM run control
@@ -91,7 +95,7 @@ if (NODE_ENV === "development") {
     open: true,
     // noInfo: true,
     overlay: true,
-    quiet: true // necessary for FriendlyErrorsPlugin
+    quiet: true, // necessary for FriendlyErrorsPlugin
   };
 
   webpackConfig.devtool = "#eval-source-map";
@@ -101,9 +105,9 @@ if (NODE_ENV === "development") {
     new HTMLWebpackPlugin({
       showErrors: true,
       cache: true,
-      // title: "brandi test",
-      templage: join(__dirname, "index.html")
-    })
+      title: "brandi test",
+      templage: join(__dirname, "index.html"),
+    }),
   ];
 }
 
@@ -114,8 +118,8 @@ if (NODE_ENV === "production") {
     ...webpackConfig.plugins,
 
     new webpack.LoaderOptionsPlugin({
-      minimize: true
-    })
+      minimize: true,
+    }),
   ];
 }
 
