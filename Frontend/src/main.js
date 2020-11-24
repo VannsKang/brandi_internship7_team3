@@ -4,7 +4,7 @@ import VueRouter from "vue-router";
 
 // LINK Style
 import "reset-css";
-import "ant-design-vue/dist/antd.css";
+import "ant-design-vue/dist/antd.less";
 import "./styles.scss";
 
 // LINK component

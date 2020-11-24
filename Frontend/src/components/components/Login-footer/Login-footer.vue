@@ -27,8 +27,10 @@ export default {
 
 <style lang="scss" scoped>
 @import "../../../styles.scss";
+
 .login-footer {
   text-align: left;
+  width: 100%;
   height: 107px;
   padding: 20px 0;
   background: #202020;

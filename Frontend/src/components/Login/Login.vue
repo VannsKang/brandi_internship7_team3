@@ -1,17 +1,13 @@
 <template>
   <a-layout class="login">
     <a-layout-content>
-      <a-row class="logo-section">
-        <div class="logo">
-          <img :src="logoImage" alt="" />
-        </div>
-      </a-row>
+      <login-logo />
       <a-row class="login-template">
         <a-form
           id="components-form-demo-normal-login"
           :form="form"
           class="login-form"
-          @submit="handleSubmit"
+          @submit.prevent="handleSubmit"
         >
           <h3 class="form-title">브랜디 어드민 로그인</h3>
           <a-form-item class="input-field">
@@ -63,9 +59,9 @@
             </a-button>
             <span class="signin-desc">
               아직 셀러가 아니신가요?
-              <a href="">
+              <router-link to="/signup" exact>
                 회원가입하기
-              </a>
+              </router-link>
             </span>
           </a-form-item>
         </a-form>
@@ -76,20 +72,19 @@
 </template>
 
 <script>
-import loginFooter from "./Login-footer/Login-footer";
-import logoImage from "../../assets/logo_seller_admin.png";
+import loginLogo from "../components/Login-logo/Login-logo";
+import loginFooter from "../components/Login-footer/Login-footer";
 
 export default {
   name: "Login",
 
   components: {
     "login-footer": loginFooter,
+    "login-logo": loginLogo,
   },
 
   data() {
-    return {
-      logoImage,
-    };
+    return {};
   },
 
   beforeCreate() {
@@ -98,11 +93,8 @@ export default {
 
   methods: {
     handleSubmit(e) {
-      e.preventDefault();
       this.form.validateFields((err, values) => {
-        if (!err) {
-          console.log("Received values of form: ", values);
-        }
+        !err && console.log("Received values of form: ", values);
       });
     },
   },
@@ -119,24 +111,12 @@ export default {
   right: 0;
   top: 0;
   bottom: 0;
+  background: $background-color;
 
   main {
     @include flexSet("center", "center", column);
     margin: auto;
     padding: 65px 0 50px;
-
-    .logo-section {
-      @include flexSet("center", "center");
-
-      .logo {
-        width: 130px;
-        margin-bottom: 40px;
-
-        img {
-          width: 100%;
-        }
-      }
-    }
 
     .login-template {
       width: 380px;
