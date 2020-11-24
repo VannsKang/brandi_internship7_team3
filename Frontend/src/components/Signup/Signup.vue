@@ -23,7 +23,7 @@
                     { required: true, message: '필수 입력항목입니다.' },
                     { min: 5, message: '아이디의 최소 길이는 5글자입니다.' },
                     {
-                      pattern: /^([A-Za-z0-9\uac00-\ud7af])+$/,
+                      pattern: /^([A-Za-z0-9])([A-Za-z0-9_-]){4,19}$/,
                       message:
                         '아이디는 5~20글자의 영문, 숫자, 언더바, 하이픈만 사용 가능하며 시작 문자는 영문 또는 숫자입니다.',
                     },
@@ -137,26 +137,12 @@
 
           <a-form-item>
             <a-radio-group v-decorator="['seller_attribute_id']">
-              <a-radio value="1">
-                쇼핑몰
-              </a-radio>
-              <a-radio value="2">
-                마켓
-              </a-radio>
-              <a-radio value="3">
-                로드샵
-              </a-radio>
-              <a-radio value="4">
-                디자이너브랜드
-              </a-radio>
-              <a-radio value="5">
-                제너럴브랜드
-              </a-radio>
-              <a-radio value="6">
-                내셔널브랜드
-              </a-radio>
-              <a-radio value="7">
-                뷰티
+              <a-radio
+                v-for="seller in seller_attribute_id"
+                :value="seller.id"
+                :key="seller.id"
+              >
+                {{ seller.name }}
               </a-radio>
             </a-radio-group>
           </a-form-item>
@@ -255,6 +241,7 @@
 <script>
 import loginFooter from "../components/Login-footer/Login-footer";
 import loginLogo from "../components/Login-logo/Login-logo";
+import { LOAD_SELLER_TYPE } from "../../config";
 
 export default {
   components: {
@@ -265,6 +252,7 @@ export default {
   data() {
     return {
       confirmDirty: false,
+      seller_attribute_id: [],
     };
   },
 
@@ -302,6 +290,22 @@ export default {
     checkNumberValid(rule, value, callback) {
       isNaN(+value) ? callback("It's not a number bro!") : callback();
     },
+
+    async loadSellerType() {
+      try {
+        const response = await this.$http.get(LOAD_SELLER_TYPE);
+        const validation = response && response.status === 200;
+        !validation && new Error("cannot fetch the data");
+        const { seller_attribute_id } = await response.data;
+        this.seller_attribute_id = seller_attribute_id;
+      } catch (error) {
+        console.log("!!error fetch data!!");
+      }
+    },
+  },
+  // SECTION lifecycle
+  mounted() {
+    this.loadSellerType();
   },
 };
 </script>

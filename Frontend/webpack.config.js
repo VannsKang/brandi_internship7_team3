@@ -7,9 +7,7 @@ const { NODE_ENV } = process.env;
 const webpackConfig = {
   mode: NODE_ENV,
 
-  entry: {
-    app: join(__dirname, "./src/main.js"),
-  },
+  entry: ["@babel/polyfill", join(__dirname, "./src/main.js")],
 
   output: {
     path: join(__dirname, "./dist"),
@@ -46,6 +44,10 @@ const webpackConfig = {
                   "success-color": "#202020",
                   "warning-color": "#ddaadd",
                   "error-color": "#a94442",
+                  "select-item-selected-bg": "#202020",
+                  "menu-item-active-bg": "#202020",
+                  "menu-dark-item-active-bg": "#202020",
+                  "menu-dark-bg": "#35363a",
                 },
                 javascriptEnabled: true,
               },

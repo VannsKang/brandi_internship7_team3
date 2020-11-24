@@ -5,6 +5,8 @@ $confirm-color: #5bc0de;
 $reject-color: #d9534f;
 $form-reject-color: #a94442;
 $background-color: #fafafa;
+$nav-color: #873b53;
+$nav-side-color: #35363a;
 
 // SECTION mixin
 
@@ -57,4 +59,45 @@ button {
 .ant-form-explain {
   font-size: 13px;
   font-weight: 600;
+}
+
+.ant-menu-submenu-title {
+  margin: 0 !important;
+}
+
+.ant-menu-sub {
+  background: $nav-side-color !important;
+}
+
+.ant-menu-submenu-open {
+  background-color: $primary-color;
+  > div {
+    border-right: 4px solid $reject-color;
+  }
+  .ant-menu-item-selected {
+    background: #444;
+  }
+}
+
+.main-side {
+  > div {
+    > ul {
+      > li {
+        > ul {
+          .ant-menu-item {
+            margin: 0 !important;
+            height: 30px !important;
+            line-height: 30px !important;
+            &:hover {
+              background: #444;
+            }
+
+            &:active {
+              background: #444;
+            }
+          }
+        }
+      }
+    }
+  }
 }
