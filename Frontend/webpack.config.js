@@ -35,7 +35,23 @@ const webpackConfig = {
       },
       {
         test: /\.less$/,
-        use: ["vue-style-loader", "css-loader", "less-loader"],
+        use: [
+          "vue-style-loader",
+          "css-loader",
+          {
+            loader: "less-loader",
+            options: {
+              lessOptions: {
+                modifyVars: {
+                  "success-color": "#202020",
+                  "warning-color": "#ddaadd",
+                  "error-color": "#a94442",
+                },
+                javascriptEnabled: true,
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.vue$/,

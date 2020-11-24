@@ -1,3 +1,13 @@
+// SECTION variable
+
+$primary-color: #202020;
+$confirm-color: #5bc0de;
+$reject-color: #d9534f;
+$form-reject-color: #a94442;
+$background-color: #fafafa;
+
+// SECTION mixin
+
 @mixin flexSet($arg...) {
   display: flex;
   justify-content: #{nth($arg, 1)};
@@ -6,6 +16,8 @@
     flex-direction: #{nth($arg, 3)};
   }
 }
+
+// SECTION Global style
 
 * {
   box-sizing: border-box;
@@ -40,4 +52,9 @@ button {
   &:focus {
     outline: 0;
   }
+}
+
+.ant-form-explain {
+  font-size: 13px;
+  font-weight: 600;
 }
