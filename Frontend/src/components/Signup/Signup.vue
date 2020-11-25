@@ -11,215 +11,95 @@
             정보입력
           </div>
         </div>
+
+        <!-- SECTION signup -->
         <div class="signup-form">
-          <div class="signup-form-title">가입 정보</div>
-
-          <a-form-item>
-            <a-input
-              v-decorator="[
-                'user_id',
-                {
-                  rules: [
-                    { required: true, message: '필수 입력항목입니다.' },
-                    { min: 5, message: '아이디의 최소 길이는 5글자입니다.' },
-                    {
-                      pattern: /^([A-Za-z0-9])([A-Za-z0-9_-]){4,19}$/,
-                      message:
-                        '아이디는 5~20글자의 영문, 숫자, 언더바, 하이픈만 사용 가능하며 시작 문자는 영문 또는 숫자입니다.',
-                    },
-                  ],
-                },
-              ]"
-              placeholder="아이디"
-            >
-              <a-icon
-                slot="prefix"
-                type="user"
-                style="color: rgba(0,0,0,.25)"
-              />
-            </a-input>
-          </a-form-item>
-          <a-form-item has-feedback>
-            <a-input
-              v-decorator="[
-                'password',
-                {
-                  rules: [
-                    {
-                      validator: validateToNextPassword,
-                    },
-                    {
-                      pattern: /^(?=.*[A-Za-z])(?=.*[0-9])(?=.*[~!@#$%^&*()\-_=+,.<>/?;:[{}\]\\|]).{8,20}$/,
-                      message:
-                        '비밀번호는 8~20글자의 영문대소문자, 숫자, 특수문자를 조합해야 합니다.',
-                    },
-                  ],
-                },
-              ]"
-              type="password"
-              placeholder="비밀번호"
-              autocomplete
-            >
-              <a-icon
-                slot="prefix"
-                type="lock"
-                style="color: rgba(0,0,0,.25)"
-              />
-            </a-input>
-          </a-form-item>
-          <a-form-item has-feedback>
-            <a-input
-              v-decorator="[
-                'confirm_password',
-                {
-                  rules: [
-                    {
-                      validator: compareToFirstPassword,
-                      message: '비밀번호가 일치하지 않습니다.',
-                    },
-                  ],
-                },
-              ]"
-              type="password"
-              placeholder="비밀번호 재입력"
-              autocomplete
-              @blur="handleConfirmBlur"
-            >
-              <a-icon
-                slot="prefix"
-                type="check"
-                style="color: rgba(0,0,0,.25)"
-              />
-            </a-input>
-          </a-form-item>
-
-          <div class="signup-form-title">
-            <span> 담당자 정보</span>
-            <span>(*실제 샵을 운영하시는 분)</span>
-          </div>
-
-          <a-form-item>
-            <a-input
-              type="tel"
-              v-decorator="[
-                'owner_number',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '올바른 정보를 입력해주세요.',
-                    },
-                    {
-                      validator: checkNumberValid,
-                      message: '올바른 정보를 입력해주세요.',
-                    },
-                  ],
-                },
-              ]"
-              placeholder="핸드폰번호"
-            >
-              <a-icon
-                slot="prefix"
-                type="phone"
-                style="color: rgba(0,0,0,.25)"
-              />
-            </a-input>
-          </a-form-item>
-          <div class="signup-form-extra">
-            <a-icon type="info-circle" theme="filled" />
-            <span
-              >입점 신청 후 브랜디 담당자가 연락을 드릴 수 있으니 정확한 정보를
-              기입해주세요.</span
-            >
-          </div>
-
-          <div class="signup-form-title">셀러 정보</div>
-
-          <a-form-item>
-            <a-radio-group v-decorator="['seller_attribute_id']">
-              <a-radio
-                v-for="seller in seller_attribute_id"
-                :value="seller.id"
-                :key="seller.id"
+          <div>
+            <div class="signup-form-title">가입 정보</div>
+            <a-form-item>
+              <a-input
+                v-decorator="[
+                  'user_id',
+                  {
+                    rules: [
+                      { required: true, message: '필수 입력항목입니다.' },
+                      { min: 5, message: '아이디의 최소 길이는 5글자입니다.' },
+                      {
+                        pattern: /^([A-Za-z0-9])([A-Za-z0-9_-]){4,19}$/,
+                        message:
+                          '아이디는 5~20글자의 영문, 숫자, 언더바, 하이픈만 사용 가능하며 시작 문자는 영문 또는 숫자입니다.',
+                      },
+                    ],
+                  },
+                ]"
+                placeholder="아이디"
               >
-                {{ seller.name }}
-              </a-radio>
-            </a-radio-group>
-          </a-form-item>
-          <a-form-item>
-            <a-input
-              v-decorator="[
-                'name',
-                {
-                  rules: [
-                    { required: true, message: '필수 입력항목입니다.' },
-                    { min: 1, message: '셀러명의 최소 길이는 1글자입니다.' },
-                  ],
-                },
-              ]"
-              placeholder="셀러명 (상호)"
-            >
-              <a-icon
-                slot="prefix"
-                type="font-size"
-                style="color: rgba(0,0,0,.25)"
-              />
-            </a-input>
-          </a-form-item>
-          <a-form-item>
-            <a-input
-              v-decorator="[
-                'eng_name',
-                {
-                  rules: [
-                    { required: true, message: '필수 입력항목입니다.' },
-                    {
-                      min: 1,
-                      message: '영문 상호명의 최소 길이는 1글자입니다.',
-                    },
-                    {
-                      pattern: /^([A-Za-z0-9\uac00-\ud7af])+(\1?)$/,
-                      message:
-                        '영문 상호명은 1글자의 영문, 숫자, 언더바, 하이픈만 사용 가능하며 시작 문자는 영문 또는 숫자입니다.',
-                    },
-                  ],
-                },
-              ]"
-              placeholder="영문 상호명"
-            >
-              <a-icon
-                slot="prefix"
-                type="font-size"
-                style="color: rgba(0,0,0,.25)"
-              />
-            </a-input>
-          </a-form-item>
-          <a-form-item>
-            <a-input
-              v-decorator="[
-                'cs_number',
-                {
-                  rules: [
-                    {
-                      required: true,
-                      message: '올바른 정보를 입력해주세요.',
-                    },
-                    {
-                      validator: checkNumberValid,
-                      message: '올바른 정보를 입력해주세요.',
-                    },
-                  ],
-                },
-              ]"
-              placeholder="고객센터 전화번호"
-            >
-              <a-icon
-                slot="prefix"
-                type="phone"
-                style="color: rgba(0,0,0,.25)"
-              />
-            </a-input>
-          </a-form-item>
+                <a-icon
+                  slot="prefix"
+                  type="user"
+                  style="color: rgba(0,0,0,.25)"
+                />
+              </a-input>
+            </a-form-item>
+            <a-form-item has-feedback>
+              <a-input
+                v-decorator="[
+                  'password',
+                  {
+                    rules: [
+                      {
+                        validator: validateToNextPassword,
+                      },
+                      {
+                        pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~!@#$%^&*()\-_=+,.<>/?;:[{}\]\\|]).{8,20}$/,
+                        message:
+                          '비밀번호는 8~20글자의 영문대소문자, 숫자, 특수문자를 조합해야 합니다.',
+                      },
+                    ],
+                  },
+                ]"
+                type="password"
+                placeholder="비밀번호"
+                autocomplete
+              >
+                <a-icon
+                  slot="prefix"
+                  type="lock"
+                  style="color: rgba(0,0,0,.25)"
+                />
+              </a-input>
+            </a-form-item>
+            <a-form-item has-feedback>
+              <a-input
+                v-decorator="[
+                  'confirm_password',
+                  {
+                    rules: [
+                      {
+                        validator: compareToFirstPassword,
+                        message: '비밀번호가 일치하지 않습니다.',
+                      },
+                    ],
+                  },
+                ]"
+                type="password"
+                placeholder="비밀번호 재입력"
+                autocomplete
+                @blur="handleConfirmBlur"
+              >
+                <a-icon
+                  slot="prefix"
+                  type="check"
+                  style="color: rgba(0,0,0,.25)"
+                />
+              </a-input>
+            </a-form-item>
+          </div>
+
+          <signup-owner />
+
+          <signup-seller />
+
           <a-form-item class="signup-form-button">
             <a-button type="primary" html-type="submit">
               신청
@@ -241,18 +121,21 @@
 <script>
 import loginFooter from "../components/Login-footer/Login-footer";
 import loginLogo from "../components/Login-logo/Login-logo";
-import { LOAD_SELLER_TYPE } from "../../config";
+import SignupOwner from "./Signup-owner/Signup-owner.vue";
+import SignupSeller from "./Signup-seller/Signup-seller";
+import { LOAD_SELLER_TYPE, SIGNUP_API } from "../../config";
 
 export default {
   components: {
     "login-footer": loginFooter,
     "login-logo": loginLogo,
+    "signup-owner": SignupOwner,
+    "signup-seller": SignupSeller,
   },
 
   data() {
     return {
       confirmDirty: false,
-      seller_attribute_id: [],
     };
   },
 
@@ -262,8 +145,20 @@ export default {
 
   methods: {
     handleSubmit(e) {
-      this.form.validateFieldsAndScroll((err, values) => {
+      this.form.validateFieldsAndScroll(async (err, values) => {
+        // REVIEW for data check
         !err && console.log("Received values of form: ", values);
+
+        // REVIEW for connect backend
+        // try {
+        //   const response = await this.$http.post(SIGNUP_API, values);
+        //   const validation = response && response.status === 200;
+        //   !validation && new Error("cannot fetch the data");
+        //   const result = response.data;
+        //   console.log(result);
+        // } catch (error) {
+        //   console.log("!!error fetch data!!");
+        // }
       });
     },
 
@@ -286,32 +181,12 @@ export default {
         ? callback("not matched!")
         : callback();
     },
-
-    checkNumberValid(rule, value, callback) {
-      isNaN(+value) ? callback("It's not a number bro!") : callback();
-    },
-
-    async loadSellerType() {
-      try {
-        const response = await this.$http.get(LOAD_SELLER_TYPE);
-        const validation = response && response.status === 200;
-        !validation && new Error("cannot fetch the data");
-        const { seller_attribute_id } = await response.data;
-        this.seller_attribute_id = seller_attribute_id;
-      } catch (error) {
-        console.log("!!error fetch data!!");
-      }
-    },
-  },
-  // SECTION lifecycle
-  mounted() {
-    this.loadSellerType();
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import "../../styles.scss";
+@import "../../styles/mixin.scss";
 
 .signup {
   position: absolute;
@@ -328,8 +203,8 @@ export default {
     margin: 0 auto;
     padding: 20px 30px 15px;
     border-radius: 4px;
-    /* border: 1px solid red; */
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
     > form {
       width: 100%;
     }
@@ -362,7 +237,7 @@ export default {
     width: 408px;
     margin: 0 auto;
 
-    > div:nth-child(4) {
+    > div {
       margin-bottom: 35px;
     }
 
@@ -370,30 +245,12 @@ export default {
       &-item {
         margin-bottom: 8px;
       }
-      /* &-explain */
     }
 
     &-title {
       font-size: 18px;
       font-weight: 700;
       margin-bottom: 5px;
-      > span:last-child {
-        font-size: 14px;
-        font-weight: 400;
-        color: rgb(30, 144, 255);
-      }
-    }
-
-    &-extra {
-      @include flexSet("flex-start", "center");
-      margin: -10px 0 50px;
-      font-size: 12px;
-      font-weight: 600;
-      color: rgb(30, 144, 255);
-
-      > span {
-        margin-left: 5px;
-      }
     }
 
     &-button {

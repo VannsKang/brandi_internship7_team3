@@ -37,7 +37,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../styles.scss";
+@import "../../../styles/mixin.scss";
 
 .main-top {
   width: 100%;

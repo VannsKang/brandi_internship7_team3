@@ -18,9 +18,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../styles.scss";
+@import "../../../styles/mixin.scss";
 
 .main-footer {
+  /* position: absolute; */
+  /* bottom: 0; */
   width: 100%;
   background: $nav-side-color;
   padding: 10px 20px 5px;

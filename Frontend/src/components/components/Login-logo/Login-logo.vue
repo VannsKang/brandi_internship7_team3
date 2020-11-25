@@ -23,7 +23,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../styles.scss";
+@import "../../../styles/mixin.scss";
 
 .logo-section {
   @include flexSet("center", "center");

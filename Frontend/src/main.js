@@ -6,7 +6,7 @@ import axios from "axios";
 // LINK Style
 import "reset-css";
 import "ant-design-vue/dist/antd.less";
-import "./styles.scss";
+import "./styles/common.scss";
 
 // LINK component
 import App from "./App.vue";
