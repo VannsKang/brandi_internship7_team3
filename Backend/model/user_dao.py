@@ -1,5 +1,103 @@
 import pymysql
 import datetime
+from utils.exceptions import InsertFailError
+
+
+class UserDao:
+    # 회원가입 정보 저장
+    def sign_up_account(self, user_data, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            sign_up_sql = """
+            INSERT INTO accounts (
+                user_id,
+                class_id
+            ) VALUES (
+                %(user_id)s, 
+                2    
+            )
+            """
+            sign_up_result = cursor.execute(sign_up_sql, user_data)
+            if not sign_up_result:
+                raise InsertFailError('회원가입 실패', 400)
+            account_id = cursor.lastrowid
+
+            user_data['account_id'] = account_id
+
+            insert_seller_info = """
+                INSERT INTO seller_info (
+                    account_id,
+                    seller_attribute_id,
+                    modifier_id,
+                    password,
+                    owner_number,
+                    name,
+                    eng_name,
+                    cs_number
+                ) VALUES (
+                    %(account_id)s,
+                    %(seller_attribute_id)s,
+                    (select class_id from accounts where account_id = %(account_id)s),
+                    %(password1)s,
+                    %(owner_number)s,
+                    %(name)s,
+                    %(eng_name)s,
+                    %(cs_number)s
+                )
+                """
+            seller_info_result = cursor.execute(insert_seller_info, user_data)
+            if not seller_info_result:
+                raise InsertFailError('회원가입 실패', 400)
+            return seller_info_result
+
+    # 셀러 로그인
+    def sign_in_seller(self, user_data, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = """
+                SELECT
+                    accounts.user_id,
+                    seller_info.password
+                FROM
+                    accounts
+                INNER JOIN
+                    seller_info ON accounts.account_id = seller_info.account_id
+                WHERE
+                    accounts.user_id=%(user_id)s
+                """
+            cursor.execute(sql, user_data)
+            sign_in_result = cursor.fetchone()
+            return sign_in_result
+
+    # 사용자 정보 조회
+    def get_user(self, user_data, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = """
+                SELECT
+                    * 
+                FROM
+                    accounts 
+                WHERE
+                    user_id=%(user_id)s
+                """
+            cursor.execute(sql, user_data)
+            get_user_result = cursor.fetchone()
+            return get_user_result
+
+    # 셀러 정보 조회
+    def get_seller_info(self, user_data, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            sql = """
+                SELECT
+                    * 
+                FROM
+                    accounts
+                INNER JOIN
+                    seller_info ON accounts.account_id = seller_info.account_id
+                WHERE
+                    accounts.user_id=%(user_id)s
+                """
+            cursor.execute(sql, user_data)
+            get_seller_info_result = cursor.fetchone()
+            return get_seller_info_result
 
 
 class SellerDao:

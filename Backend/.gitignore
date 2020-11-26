@@ -104,7 +104,7 @@ ipython_config.py
 #   install all needed dependencies.
 #Pipfile.lock
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+# PEP 582; used by e.g. github.com/David-Odbor/pyflow
 __pypackages__/
 
 # Celery stuff
@@ -187,7 +187,7 @@ dmypy.json
 #   having no cross-platform support, pipenv may install dependencies that don't work, or not
 #   install all needed dependencies.
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+# PEP 582; used by e.g. github.com/David-Odbor/pyflow
 
 # Celery stuff
 
