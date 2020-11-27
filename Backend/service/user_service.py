@@ -7,7 +7,7 @@ class SellerService:
         seller_list = self.seller_dao.get_seller_list(filter_data, conn)
 
         data = {
-            'seller_count' :  self.seller_dao.get_seller_count(conn)['count'],
+            'seller_count' :  self.seller_dao.get_seller_count(filter_data, conn)['count'],
             'data': [{
                 'id'               : seller['id'],
                 'seller_id'        : seller['seller_id'],
@@ -17,7 +17,8 @@ class SellerService:
                 'seller_attribute' : seller['seller_attribute'],
                 'phone_number'     : seller['phone_number'],
                 'email'            : seller['email'],
-                'created_at'       : seller['created_at']
+                'created_at'       : seller['created_at'],
+                'seller_actions'   : seller['seller_action']
             } for seller in seller_list]
         }
 
@@ -27,3 +28,8 @@ class SellerService:
         seller_attributes = self.seller_dao.get_seller_attributes(conn)
 
         return seller_attributes
+
+    def update_seller_status(self, account_info, conn):
+        seller_status = self.seller_dao.get_seller_status(account_info, conn)
+
+        return seller_status

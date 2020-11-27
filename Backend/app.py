@@ -1,5 +1,4 @@
 import config
-import pymysql
 
 from flask      import Flask, jsonify
 from flask_cors import CORS
@@ -32,7 +31,7 @@ def create_app(test_config=None):
     services.user_service = user_service.SellerService(seller_dao, config)
 
     # Endpoint
-    user_view.SellerView.create_endpoints(app, services)
+    user_view.SellerView(app, services)
 
     @app.errorhandler(Exception)
     def handle_error(error):
