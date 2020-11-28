@@ -37,7 +37,9 @@
           <span> {{ menu_name }}</span>
         </span>
         <a-menu-item v-for="sub_menu in sub_menus" :key="sub_menu.id">
-          {{ sub_menu.name }}
+          <div @click="openMenu" :data-id="sub_menu.link">
+            {{ sub_menu.name }}
+          </div>
         </a-menu-item>
       </a-sub-menu>
     </a-menu>
@@ -67,6 +69,11 @@ export default {
   },
 
   methods: {
+    openMenu(e) {
+      const { id } = e.target.dataset;
+      this.$router.push(`/main/${id}`);
+    },
+
     onOpenChange(openKeys) {
       const latestOpenKey = openKeys.find(
         (key) => this.openKeys.indexOf(key) === -1
@@ -98,7 +105,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../../styles.scss";
+@import "../../../styles/mixin.scss";
 
 .main-side {
   background: $nav-side-color;

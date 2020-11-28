@@ -1,0 +1,20 @@
+// SECTION variable
+
+$primary-color: #202020;
+$confirm-color: #5bc0de;
+$reject-color: #d9534f;
+$form-reject-color: #a94442;
+$background-color: #fafafa;
+$nav-color: #873b53;
+$nav-side-color: #35363a;
+$excel-button-color: #5cb85c;
+
+// SECTION mixin
+@mixin flexSet($arg...) {
+  display: flex;
+  justify-content: #{nth($arg, 1)};
+  align-items: #{nth($arg, 2)};
+  @if length($arg) == 3 {
+    flex-direction: #{nth($arg, 3)};
+  }
+}

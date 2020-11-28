@@ -102,7 +102,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../styles.scss";
+@import "../../styles/mixin.scss";
 
 .login {
   text-align: center;

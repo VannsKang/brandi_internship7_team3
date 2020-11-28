@@ -3,19 +3,7 @@
     <main-top />
     <a-layout class="main-sider">
       <main-side />
-
-      <a-layout>
-        <a-layout-content
-          :style="{
-            margin: '24px 16px',
-            padding: '24px',
-            background: '#fff',
-            minHeight: '280px',
-          }"
-        >
-          Content
-        </a-layout-content>
-      </a-layout>
+      <router-view />
     </a-layout>
     <main-footer />
   </div>
@@ -42,7 +30,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../../styles.scss";
+@import "../../styles/mixin.scss";
 
 .main {
   position: absolute;
@@ -52,7 +40,7 @@ export default {
   bottom: 0;
 
   &-sider {
-    height: calc(100% - 94px);
+    min-height: calc(100% - 96px);
   }
 }
 </style>
