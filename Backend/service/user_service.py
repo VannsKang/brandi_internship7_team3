@@ -17,8 +17,8 @@ class SellerService:
                 'seller_attribute' : seller['seller_attribute'],
                 'phone_number'     : seller['phone_number'],
                 'email'            : seller['email'],
-                'created_at'       : seller['created_at'],
-                'seller_actions'   : seller['seller_action']
+                'created_at'       : seller['created_at'].strftime('%Y-%m-%d %H:%M:%S'),
+                'seller_actions'   : seller['seller_action'].split(',')
             } for seller in seller_list]
         }
 
@@ -30,6 +30,6 @@ class SellerService:
         return seller_attributes
 
     def update_seller_status(self, account_info, conn):
-        seller_status = self.seller_dao.get_seller_status(account_info, conn)
+        seller_status = self.seller_dao.update_seller_status(account_info, conn)
 
         return seller_status

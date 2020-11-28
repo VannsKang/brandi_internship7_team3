@@ -5,6 +5,10 @@ class SellerDao:
     # noinspection PyMethodMayBeStatic
     def get_seller_list(self, filter_data, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+
+            filter_data['offset'] = int(filter_data['offset'])
+            filter_data['limit'] = int(filter_data['limit'])
+
             query = """
                 SELECT 
                     ac.account_id    AS id,
@@ -13,6 +17,7 @@ class SellerDao:
                     s.name           AS kor_name,
                     ss.name          AS seller_status,
                     sat.name         AS seller_attribute,
+                    s.owner_name     AS owner_name,
                     s.owner_number   AS phone_number,
                     s.owner_email    AS email,
                     ac.created_at    AS created_at,
@@ -29,20 +34,45 @@ class SellerDao:
                 WHERE end_date='9999-12-31 AND is_deleted=0'
             """
 
-            if 'attribute' in filter_data:
-                query += ' AND sat.seller_attribute_id = %(attribute)s'
+            if 'id' in filter_data:
+                query += ' AND ac.account_id = %(id)s'
+
+            if 'seller_id' in filter_data:
+                query += ' AND ac.user_id = %(seller_id)s'
+
+            if 'eng_name' in filter_data:
+                query += ' AND s.eng_name = %(eng_name)s'
+
+            if 'kor_name' in filter_data:
+                query += ' AND s.name = %(kor_name)s'
+
+            if 'owner_name' in filter_data:
+                query += ' AND s.owner_name = %(owner_name)s'
 
             if 'status' in filter_data:
                 query += ' AND ss.seller_status_id = %(status)s'
 
-            filter_data['offset'] = int(filter_data['offset'])
-            filter_data['limit'] = int(filter_data['limit'])
+            if 'owner_number' in filter_data:
+                query += ' AND s.owner_number = %(owner_number)s'
+
+            if 'owner_email' in filter_data:
+                query += ' AND s.owner_email = %(owner_email)s'
+
+            if 'attribute' in filter_data:
+                query += ' AND sat.seller_attribute_id = %(attribute)s'
+
+            if 'start_time' in filter_data and 'end_time' in filter_data:
+                query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
+            elif 'start_time' in filter_data:
+                query += ' AND ac.created_at >= %(start_time)s'
+            elif 'end_time' in filter_data:
+                query += ' AND ac.created_at <= %(end_time)s'
 
             query += ' LIMIT %(offset)s, %(limit)s'
 
-            seller_list = cursor.execute(query, filter_data)
+            sellers = cursor.execute(query, filter_data)
 
-            if not seller_list:
+            if not sellers:
                 raise Exception("seller Data 없음")
 
             return cursor.fetchall()
@@ -112,7 +142,6 @@ class SellerDao:
                     seller_status_id,
                     seller_attribute_id,
                     modifier_id,
-                    start_date,
                     is_deleted,
                     password,
                     name,
@@ -133,17 +162,18 @@ class SellerDao:
                     delivery,
                     refund
                 FROM seller_info
-                WHERE end_date='9999-12-31'
-                AND %(account_id)s
+                WHERE end_date = '9999-12-31'
+                AND account_id = %(account_id)s
             """
 
-            # 이전에 가장 최근 셀러 정보 획득
+            # 가장 최근 셀러 정보 확인
             previous_seller_info_check = cursor.execute(previous_seller_info_query, account_info)
 
             # 해당 셀러 정보가 없을 시 에러처리
             if not previous_seller_info_check:
                 raise Exception("seller Data 없음")
 
+            # 가장 최근 셀러 정보 가져옴
             previous_seller_info = cursor.fetchone()
 
             insert_seller_info_query = """
@@ -154,6 +184,7 @@ class SellerDao:
                     modifier_id,
                     is_deleted,
                     password,
+                    start_date,
                     name,
                     eng_name,
                     cs_number,
@@ -178,6 +209,7 @@ class SellerDao:
                     %(modifier_id)s,
                     %(is_deleted)s,
                     %(password)s,
+                    %(now)s
                     %(name)s,
                     %(eng_name)s,
                     %(cs_number)s,
