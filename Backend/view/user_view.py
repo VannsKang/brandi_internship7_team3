@@ -35,6 +35,30 @@ class SellerView:
                 conn.close()
 
         # 셀러 속성
+        @app.route("/seller_status", methods=['GET'])
+        def seller_status_list():
+            conn = None
+
+            try:
+                conn = get_connection()
+                seller_status = seller_service.get_seller_status(conn)
+
+            except KeyError:
+                return jsonify({'message': 'KEY ERROR'}), 400
+
+            except TypeError:
+                return jsonify({'message': 'TYPE ERROR'}), 400
+
+            except Exception as e:
+                return jsonify({'message': 'error {}'.format(e)}), 400
+
+            else:
+                return jsonify(seller_status), 200
+
+            finally:
+                conn.close()
+
+        # 셀러 속성
         @app.route("/seller_attributes", methods=['GET'])
         def seller_attributes_list():
             conn = None

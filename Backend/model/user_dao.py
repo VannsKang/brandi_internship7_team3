@@ -1,4 +1,5 @@
 import pymysql
+import datetime
 
 
 class SellerDao:
@@ -31,7 +32,7 @@ class SellerDao:
                             INNER JOIN seller_actions AS sa ON ssa.action_id = sa.seller_action_id
                             GROUP BY ssa.status_id) sa ON s.seller_status_id = sa.status_id
                 
-                WHERE end_date='9999-12-31 AND is_deleted=0'
+                WHERE end_date='9999-12-31' AND is_deleted=0
             """
 
             if 'id' in filter_data:
@@ -49,23 +50,27 @@ class SellerDao:
             if 'owner_name' in filter_data:
                 query += ' AND s.owner_name = %(owner_name)s'
 
-            if 'status' in filter_data:
-                query += ' AND ss.seller_status_id = %(status)s'
+            if 'seller_status' in filter_data:
+                query += ' AND ss.seller_status_id = %(seller_status)s'
 
-            if 'owner_number' in filter_data:
-                query += ' AND s.owner_number = %(owner_number)s'
+            if 'phone_number' in filter_data:
+                query += ' AND s.owner_number = %(phone_number)s'
 
-            if 'owner_email' in filter_data:
-                query += ' AND s.owner_email = %(owner_email)s'
+            if 'email' in filter_data:
+                query += ' AND s.owner_email = %(email)s'
 
-            if 'attribute' in filter_data:
-                query += ' AND sat.seller_attribute_id = %(attribute)s'
+            if 'seller_attribute' in filter_data:
+                query += ' AND sat.seller_attribute_id = %(seller_attribute)s'
 
             if 'start_time' in filter_data and 'end_time' in filter_data:
+                end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
+                filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
             elif 'start_time' in filter_data:
                 query += ' AND ac.created_at >= %(start_time)s'
             elif 'end_time' in filter_data:
+                end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
+                filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 query += ' AND ac.created_at <= %(end_time)s'
 
             query += ' LIMIT %(offset)s, %(limit)s'
@@ -92,14 +97,46 @@ class SellerDao:
                             INNER JOIN seller_actions AS sa ON ssa.action_id = sa.seller_action_id
                             GROUP BY ssa.status_id) sa ON s.seller_status_id = sa.status_id
     
-                WHERE end_date='9999-12-31 AND is_deleted=0'
+                WHERE end_date='9999-12-31' AND is_deleted=0
             """
 
-            if 'attribute' in filter_data:
-                query += ' AND sat.seller_attribute_id = %(attribute)s'
+            if 'id' in filter_data:
+                query += ' AND ac.account_id = %(id)s'
 
-            if 'status' in filter_data:
-                query += ' AND ss.seller_status_id = %(status)s'
+            if 'seller_id' in filter_data:
+                query += ' AND ac.user_id = %(seller_id)s'
+
+            if 'eng_name' in filter_data:
+                query += ' AND s.eng_name = %(eng_name)s'
+
+            if 'kor_name' in filter_data:
+                query += ' AND s.name = %(kor_name)s'
+
+            if 'owner_name' in filter_data:
+                query += ' AND s.owner_name = %(owner_name)s'
+
+            if 'seller_status' in filter_data:
+                query += ' AND ss.seller_status_id = %(seller_status)s'
+
+            if 'phone_number' in filter_data:
+                query += ' AND s.owner_number = %(phone_number)s'
+
+            if 'email' in filter_data:
+                query += ' AND s.owner_email = %(email)s'
+
+            if 'seller_attribute' in filter_data:
+                query += ' AND sat.seller_attribute_id = %(seller_attribute)s'
+
+            if 'start_time' in filter_data and 'end_time' in filter_data:
+                end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
+                filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+                query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
+            elif 'start_time' in filter_data:
+                query += ' AND ac.created_at >= %(start_time)s'
+            elif 'end_time' in filter_data:
+                end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
+                filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+                query += ' AND ac.created_at <= %(end_time)s'
 
             seller_count = cursor.execute(query, filter_data)
 
@@ -107,6 +144,21 @@ class SellerDao:
                 raise Exception("seller Data 없음")
 
             return cursor.fetchone()
+
+    # noinspection PyMethodMayBeStatic
+    def get_seller_status(self, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+                SELECT *
+                FROM seller_status
+            """
+
+            seller_status = cursor.execute(query)
+
+            if not seller_status:
+                raise Exception("seller status Data 없음")
+
+            return cursor.fetchall()
 
     # noinspection PyMethodMayBeStatic
     def get_seller_attributes(self, conn):
