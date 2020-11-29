@@ -27,11 +27,11 @@ def create_app(test_config=None):
     seller_dao = user_dao.SellerDao()
 
     # Business Layer
-    services = Services
+    services = Services()
     services.user_service = user_service.SellerService(seller_dao, config)
 
     # Endpoint
-    user_view.SellerView(app, services)
+    user_view.SellerView.create_endpoints(app, services)
 
     @app.errorhandler(Exception)
     def handle_error(error):
