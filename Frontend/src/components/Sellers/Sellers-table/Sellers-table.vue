@@ -25,77 +25,97 @@
         <!-- SECTION search row -->
 
         <tr>
-          <td></td>
+          <td />
 
-          <td
-            v-for="col in [
-              'seller_key',
-              'seller_id',
-              'seller_name_eng',
-              'seller_name',
-              'owner_name',
-            ]"
-            :key="col"
-          >
+          <td v-for="column in columns.slice(0, 5)" :key="column.dataIndex">
             <div>
-              <a-input @keyup.enter="searchInput" :id="col" />
+              <a-input
+                :id="column.dataIndex"
+                v-model.lazy="searchData[column.dataIndex]"
+                :value="input_value"
+                @keyup.enter="searchInput"
+              />
             </div>
           </td>
 
+          <!-- STUB seller status -->
           <td>
             <div>
               <a-select
-                default-value="Select"
+                :default-value="select_value"
                 style="width: 80px"
-                @change="searchSellerStatus"
+                @change="searchSellerDropdown"
               >
                 <a-select-option
                   v-for="stat in seller_status"
-                  :value="stat.name"
-                  :key="stat.id"
+                  :key="stat.name"
+                  name="seller_status"
+                  :value="stat.seller_status_id"
                 >
                   {{ stat.name }}
                 </a-select-option>
               </a-select>
             </div>
           </td>
-
-          <td v-for="col in ['owner_phone', 'owner_email']" :key="col">
+          <!-- STUB email, phoneNumber -->
+          <td v-for="column in columns.slice(6, 8)" :key="column.dataIndex">
             <div>
-              <a-input @keyup.enter="searchInput" :id="col" />
+              <a-input
+                :id="column.dataIndex"
+                v-model.lazy="searchData[column.dataIndex]"
+                :value="input_value"
+                @keyup.enter="searchInput"
+              />
             </div>
           </td>
 
+          <!-- STUB seller attribute -->
           <td>
             <div>
               <a-select
-                default-value="Select"
+                :default-value="select_value"
                 style="width: 100px"
-                @change="searchSellerId"
+                @change="searchSellerDropdown"
               >
                 <a-select-option
                   v-for="attribute in seller_attribute_id"
-                  :value="attribute.id"
-                  :key="attribute.id"
+                  :key="attribute.name"
+                  name="seller_attribute_id"
+                  :value="attribute.seller_attribute_id"
                 >
                   {{ attribute.name }}
                 </a-select-option>
               </a-select>
             </div>
           </td>
+
+          <!-- STUB calendar -->
           <td>
             <div>
-              <a-date-picker placeholder="From" @change="onDateChange" />
-              <a-date-picker placeholder="to" @change="onDateChange" />
+              <a-date-picker
+                placeholder="From"
+                @change="
+                  (date, dateString) =>
+                    onDateChange('start_time', data, dateString)
+                "
+              />
+              <a-date-picker
+                placeholder="to"
+                @change="
+                  (date, dateString) =>
+                    onDateChange('end_time', data, dateString)
+                "
+              />
             </div>
           </td>
+
           <td>
             <div>
-              <a-button type="primary">
+              <a-button type="primary" @click="submitSearch">
                 <a-icon type="search" />
                 <span>Search</span>
               </a-button>
-              <a-button type="primary">
+              <a-button type="primary" @click="resetSearch">
                 <a-icon type="close" />
                 <span>Reset</span>
               </a-button>
@@ -103,15 +123,15 @@
           </td>
         </tr>
 
-        <!-- SECTION data row -->
+        <!-- SECTION datarow -->
 
         <tr v-for="item in data" :key="item.id">
           <td>
             <div>
               <a-checkbox
+                :id="item.id.toString()"
                 class="listItems"
                 @change="changeEachCheckBox"
-                :id="item.id.toString()"
               />
             </div>
           </td>
@@ -123,13 +143,24 @@
           </td>
 
           <td>
-            <div @click="moveSellerDetails" :id="item.id">
+            <div :id="item.id" @click="moveSellerDetails">
               {{ item.seller_id }}
             </div>
           </td>
 
-          <template v-for="(val, name, index) in item">
-            <td v-if="index > 1 && name !== 'seller_actions'" :key="name">
+          <template
+            v-for="(val, name) in [
+              item.eng_name,
+              item.kor_name,
+              item.owner_name,
+              item.seller_status,
+              item.phone_number,
+              item.email,
+              item.seller_attribute,
+              item.created_at,
+            ]"
+          >
+            <td :key="name">
               <div>
                 {{ val }}
               </div>
@@ -139,11 +170,14 @@
           <td>
             <span>
               <a-button
-                :key="idx"
-                v-for="(btn, idx) in item.seller_actions"
-                :style="confirmBtnColor(btn)"
+                v-for="btn in item.seller_actions"
+                :key="btn.id"
+                :data-id="item.id"
+                :data-btn="btn.id"
+                :style="confirmBtnColor(+btn.id)"
+                @click="handleActions"
               >
-                {{ btn }}
+                {{ btn.name }}
               </a-button>
             </span>
           </td>
@@ -154,8 +188,10 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
-  name: "Sellers-table",
+  name: "SellersTable",
 
   components: {},
 
@@ -168,12 +204,32 @@ export default {
       type: Array,
       required: true,
     },
-    seller_status: {
-      type: Array,
+    searchInput: {
+      type: Function,
       required: true,
     },
-    seller_attribute_id: {
-      type: Array,
+    searchSellerDropdown: {
+      type: Function,
+      required: true,
+    },
+    onDateChange: {
+      type: Function,
+      required: true,
+    },
+    searchData: {
+      type: Object,
+      required: true,
+    },
+    submitSearch: {
+      type: Function,
+      required: true,
+    },
+    resetSearch: {
+      type: Function,
+      required: true,
+    },
+    handleActions: {
+      type: Function,
       required: true,
     },
   },
@@ -185,6 +241,11 @@ export default {
       checkAll: false,
       plainOptions: [],
       checkedList: [],
+
+      // ANCHOR Pagination
+      page: {
+        number: 1,
+      },
 
       // ANCHOR for input items
     };
@@ -236,48 +297,25 @@ export default {
     // TODO move to seller detail
     moveSellerDetails(e) {
       const { id } = e.target;
-      this.$router.push(`/main/user/${id}`);
+      this.$router.push(`/main/seller/info/${id}`);
     },
 
-    //  TODO search query
-    searchInput(e) {
-      const { value, id } = e.target;
-      const searchInput = {
-        [id]: value,
-      };
-      console.log(searchInput);
-    },
-
-    searchSellerStatus(value) {
-      const searchInput = {
-        seller_status: value,
-      };
-      console.log(searchInput);
-    },
-
-    searchSellerId(value) {
-      const searchInput = { seller_attribute_id: value };
-      console.log(searchInput);
-    },
-
-    onDateChange(date, dateString) {
-      console.log(date, dateString);
-    },
+    // SECTION btn styler
 
     confirmBtnColor(btn) {
-      if (btn === "휴점 신청")
+      if (btn === 3 || btn === 6)
         return {
           background: `#f0ad4e`,
           border: "1px solid #eea236",
         };
 
-      if (btn === "입점 승인")
+      if (btn === 1 || btn === 4)
         return {
           background: `#5bc0de`,
           border: "1px solid #46b8da",
         };
 
-      if (btn === "퇴점신청 처리" || btn === "입점 거절")
+      if (btn === 5 || btn === 2 || btn === 7)
         return {
           background: `#d9534f`,
           border: `1px solid #d43f3a`,
@@ -285,7 +323,14 @@ export default {
     },
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      seller_attribute_id: ({ sellers }) => sellers.seller_attribute_id,
+      seller_status: ({ sellers }) => sellers.seller_status,
+      input_value: ({ sellers }) => sellers.input_value,
+      select_value: ({ sellers }) => sellers.select_value,
+    }),
+  },
 
   // SECTION Life cycle
   beforeUpdate() {
@@ -303,7 +348,7 @@ export default {
   overflow-x: scroll;
 
   > table {
-    min-width: 1350px;
+    min-width: 1500px;
     border-collapse: separate;
     /* margin-bottom: 5px; */
     > thead {
@@ -324,7 +369,7 @@ export default {
             }
           }
           &:nth-child(2) {
-            width: 54px;
+            width: 60px;
           }
           &:nth-child(3) {
             width: 118px;
@@ -333,7 +378,7 @@ export default {
             width: 115px;
           }
           &:nth-child(5) {
-            width: 99px;
+            width: 140px;
           }
           &:nth-child(6) {
             width: 96px;
@@ -342,7 +387,7 @@ export default {
             width: 65px;
           }
           &:nth-child(8) {
-            width: 117px;
+            width: 137px;
           }
           &:nth-child(9) {
             width: 105px;
@@ -351,10 +396,10 @@ export default {
             width: 85px;
           }
           &:nth-child(11) {
-            width: 159px;
+            width: 179px;
           }
           &:nth-child(12) {
-            width: 251px;
+            width: 271px;
             border-right: 0;
           }
         }

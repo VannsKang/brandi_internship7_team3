@@ -15,7 +15,9 @@
         <!-- SECTION signup -->
         <div class="signup-form">
           <div>
-            <div class="signup-form-title">가입 정보</div>
+            <div class="signup-form-title">
+              가입 정보
+            </div>
             <a-form-item>
               <a-input
                 v-decorator="[
@@ -123,7 +125,7 @@ import loginFooter from "../components/Login-footer/Login-footer";
 import loginLogo from "../components/Login-logo/Login-logo";
 import SignupOwner from "./Signup-owner/Signup-owner.vue";
 import SignupSeller from "./Signup-seller/Signup-seller";
-import { LOAD_SELLER_TYPE, SIGNUP_API } from "../../config";
+import { SIGNUP_API } from "../../config";
 
 export default {
   components: {
@@ -139,26 +141,26 @@ export default {
     };
   },
 
+  // SECTION lifecycle
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "Signup" });
   },
 
   methods: {
-    handleSubmit(e) {
+    handleSubmit() {
       this.form.validateFieldsAndScroll(async (err, values) => {
         // REVIEW for data check
-        !err && console.log("Received values of form: ", values);
-
-        // REVIEW for connect backend
-        // try {
-        //   const response = await this.$http.post(SIGNUP_API, values);
-        //   const validation = response && response.status === 200;
-        //   !validation && new Error("cannot fetch the data");
-        //   const result = response.data;
-        //   console.log(result);
-        // } catch (error) {
-        //   console.log("!!error fetch data!!");
-        // }
+        // !err && console.log("Received values of form: ", values);
+        try {
+          const response = await this.$http.post(SIGNUP_API, values);
+          const validation = response && response.status === 200;
+          !validation && new Error("cannot fetch the data");
+          const { message } = response.data;
+          console.log(message, values);
+          message === "SUCCESS" && this.$router.push(`/`);
+        } catch (error) {
+          console.log("!!error fetch data!!");
+        }
       });
     },
 
