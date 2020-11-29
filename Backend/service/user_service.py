@@ -84,6 +84,29 @@ class SellerService:
         return seller_attributes
 
     def update_seller_status(self, account_info, conn):
+
+        # 액션에 따른 상태 이전
+        if account_info['seller_action_id'] == 1:
+            account_info['seller_status_id'] = 2
+
+        if account_info['seller_action_id'] == 2:
+            account_info['is_deleted'] = 1
+
+        if account_info['seller_action_id'] == 3:
+            account_info['seller_status_id'] = 5
+
+        if account_info['seller_action_id'] == 4:
+            account_info['seller_status_id'] = 2
+
+        if account_info['seller_action_id'] == 5:
+            account_info['seller_status_id'] = 4
+
+        if account_info['seller_action_id'] == 6:
+            account_info['seller_status_id'] = 2
+
+        if account_info['seller_action_id'] == 7:
+            account_info['seller_status_id'] = 3
+
         seller_status = self.seller_dao.update_seller_status(account_info, conn)
 
         return seller_status
