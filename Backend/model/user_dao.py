@@ -190,12 +190,14 @@ class SellerDao:
 
             previous_seller_info_query = """
                 SELECT
+                    seller_info_id AS previous_seller_info_id,
                     account_id,
                     seller_status_id,
                     seller_attribute_id,
                     modifier_id,
                     is_deleted,
                     password,
+                    start_date,
                     name,
                     eng_name,
                     cs_number,
@@ -227,6 +229,7 @@ class SellerDao:
 
             # 가장 최근 셀러 정보 가져옴
             previous_seller_info = cursor.fetchone()
+            previous_seller_info['now'] = now['now()']
 
             insert_seller_info_query = """
                 INSERT INTO seller_info (
@@ -254,6 +257,7 @@ class SellerDao:
                     close_time,
                     delivery,
                     refund
+                )
                 VALUES (    
                     %(account_id)s,
                     %(seller_status_id)s,
@@ -261,7 +265,7 @@ class SellerDao:
                     %(modifier_id)s,
                     %(is_deleted)s,
                     %(password)s,
-                    %(now)s
+                    %(now)s,
                     %(name)s,
                     %(eng_name)s,
                     %(cs_number)s,
@@ -286,7 +290,10 @@ class SellerDao:
             account_info = dict(previous_seller_info, **account_info)
 
             # 수정 내용이 적용된 셀러 정보를 생성
-            cursor.execute(insert_seller_info_query, account_info)
+            insert_seller_info_check = cursor.execute(insert_seller_info_query, account_info)
+
+            if not insert_seller_info_check:
+                raise Exception('셀러 상태 정보 갱신 실패')
 
             update_previous_seller_info = """
                 UPDATE seller_info
@@ -295,6 +302,9 @@ class SellerDao:
             """
 
             # 이전 셀러 정보의 end_date 를 현재 시간으로 수정
-            cursor.execute(update_previous_seller_info, previous_seller_info)
+            update_seller_info_check = cursor.execute(update_previous_seller_info, previous_seller_info)
+
+            if not update_seller_info_check:
+                raise Exception('이전 셀러 정보 이력 업데이트 실패')
 
             return cursor.fetchone()

@@ -92,7 +92,7 @@ class SellerView:
                 conn = get_connection()
                 account_info = request.json
 
-                seller_service.update_seller_status(account_info, conn)
+                updated_seller = seller_service.update_seller_status(account_info, conn)
 
             except KeyError:
                 conn.rollback()
