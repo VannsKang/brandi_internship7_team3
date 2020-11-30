@@ -49,25 +49,7 @@ class UserDao:
                 raise InsertFailError('회원가입 실패', 400)
             return seller_info_result
 
-    # 셀러 로그인
-    def sign_in_seller(self, user_data, conn):
-        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
-            sql = """
-                SELECT
-                    accounts.user_id,
-                    seller_info.password
-                FROM
-                    accounts
-                INNER JOIN
-                    seller_info ON accounts.account_id = seller_info.account_id
-                WHERE
-                    accounts.user_id=%(user_id)s
-                """
-            cursor.execute(sql, user_data)
-            sign_in_result = cursor.fetchone()
-            return sign_in_result
-
-    # 사용자 정보 조회
+    # 사용자 정보 존재 여부 조회
     def get_user(self, user_data, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = """
@@ -87,7 +69,8 @@ class UserDao:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = """
                 SELECT
-                    * 
+                    accounts.user_id,
+                    seller_info.password
                 FROM
                     accounts
                 INNER JOIN
