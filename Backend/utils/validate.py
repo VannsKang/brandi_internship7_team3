@@ -2,16 +2,24 @@ from flask import request, jsonify
 import jwt
 import re
 from config import SECRET, ALGORITHM
+from connection import get_connection
 
 
 def login_validate(func):
     def wrapper(self, request, *args, **kwargs):
+        conn = get_connection()
+        token = request.headers.get('Authorization', None)
+        if token is None:
+            return jsonify({'message': 'TOKEN_DOES_NOT_EXIST'}, 403)
         try:
-            token = request.headers.get('Authorization', None)
-            payload = jwt.decode(token, SECRET['secret'], ALGORITHM['algorithm'])
-            return func(self, payload, *args, **kwargs)
+            decode = jwt.decode(token, SECRET['secret'], ALGORITHM['algorithm'])
+            user = self.user_dao.get_seller_info(conn, decode)
+            request.user_id = user['user_id']
+            return func(self, request, *args, **kwargs)
         except Exception as e:
-            return jsonify({'message': f'{e}'}), 400
+            return jsonify({'message': 'error {}'.format(e)}), 400
+        finally:
+            conn.close()
     return wrapper
 
 

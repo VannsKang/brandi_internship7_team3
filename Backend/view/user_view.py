@@ -1,8 +1,8 @@
-from flask                   import request, jsonify
+from flask import request, jsonify
 from flask_request_validator import Param, JSON, Pattern, validate_params
-from connection              import get_connection
-from service.user_service    import UserService, SellerService
-from utils.exceptions        import ApiError
+from connection import get_connection
+from service.user_service import UserService, SellerService
+from utils.exceptions import ApiError
 
 
 class UserView:
@@ -45,7 +45,7 @@ class UserView:
                 return jsonify({'message': format(e.message)}), e.status_code
             except Exception as e:
                 conn.rollback()
-                return jsonify({'message': format(e)}), 500
+                return jsonify({'message': 'error {}'.format(e)}), 400
             finally:
                 conn.close()
 
@@ -70,7 +70,7 @@ class UserView:
             except ApiError as e:
                 return jsonify({'message': format(e.message)}), e.status_code
             except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 500
+                return jsonify({'message': 'error {}'.format(e)}), 400
             finally:
                 conn.close()
 
@@ -93,13 +93,13 @@ class SellerView:
                 data = seller_service.get_seller_list(filter_data, conn)
 
             except KeyError:
-                return jsonify({'message' : '셀러 정보 조회에 유효하지 않은 키 값 전송'}), 400
+                return jsonify({'message': '셀러 정보 조회에 유효하지 않은 키 값 전송'}), 400
 
             except TypeError:
-                return jsonify({'message' : '셀러 정보 조회에 비어있는 값 전송'}), 400
+                return jsonify({'message': '셀러 정보 조회에 비어있는 값 전송'}), 400
 
             except Exception as e:
-                return jsonify({'message' : 'error {}'.format(e)}), 400
+                return jsonify({'message': 'error {}'.format(e)}), 400
 
             else:
                 return jsonify(data), 200
