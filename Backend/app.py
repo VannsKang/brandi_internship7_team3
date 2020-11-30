@@ -3,9 +3,9 @@ import config
 from flask      import Flask, jsonify
 from flask_cors import CORS
 
-from model.user_dao       import UserDao, SellerDao
-from service.user_service import UserService, SellerService
-from view.user_view       import UserView, SellerView
+from model.user_dao       import UserDao
+from service.user_service import UserService
+from view.user_view       import UserView
 from utils.exceptions     import ApiError
 
 
@@ -26,16 +26,16 @@ def create_app(test_config=None):
 
     # Persistence Layer
     user_dao = UserDao()
-    seller_dao = SellerDao()
 
     # Business Layer
     services = Services
     services.user_service = UserService(user_dao, config)
-    services.seller_service = SellerService(seller_dao, config)
 
     # Endpoint
     UserView.create_endpoints(app, services)
-    SellerView.create_endpoints(app, services)
+
+    # Endpoint
+    UserView.create_endpoints(app, services)
 
     @app.errorhandler(Exception)
     def handle_error(error):

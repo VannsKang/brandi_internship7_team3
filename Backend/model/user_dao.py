@@ -82,15 +82,9 @@ class UserDao:
             get_seller_info_result = cursor.fetchone()
             return get_seller_info_result
 
-
-class SellerDao:
     # noinspection PyMethodMayBeStatic
     def get_seller_list(self, filter_data, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
-
-            filter_data['offset'] = int(filter_data['offset'])
-            filter_data['limit'] = int(filter_data['limit'])
-
             query = """
                 SELECT 
                     ac.account_id    AS id,
@@ -103,65 +97,86 @@ class SellerDao:
                     s.owner_number   AS phone_number,
                     s.owner_email    AS email,
                     ac.created_at    AS created_at,
-                    sa.seller_action AS seller_action
+                    sa.seller_action AS seller_action,
+                    sa.seller_action_id AS seller_action_id
                 FROM seller_info AS s
                 INNER JOIN accounts AS ac ON s.account_id = ac.account_id
                 INNER JOIN seller_status AS ss ON s.seller_status_id = ss.seller_status_id
                 INNER JOIN seller_attributes AS sat ON s.seller_attribute_id = sat.seller_attribute_id
-                LEFT JOIN (SELECT GROUP_CONCAT(sa.name) AS seller_action, ssa.status_id
-                            FROM seller_status_actions AS ssa
-                            INNER JOIN seller_actions AS sa ON ssa.action_id = sa.seller_action_id
-                            GROUP BY ssa.status_id) sa ON s.seller_status_id = sa.status_id
+                LEFT JOIN (SELECT 
+                            GROUP_CONCAT(sa.name) AS seller_action, 
+                            GROUP_CONCAT(sa.seller_action_id) AS seller_action_id, 
+                            ssa.status_id
+                        FROM seller_status_actions AS ssa
+                        INNER JOIN seller_actions AS sa ON ssa.action_id = sa.seller_action_id
+                        GROUP BY ssa.status_id) sa ON s.seller_status_id = sa.status_id
                 
                 WHERE end_date='9999-12-31' AND is_deleted=0
             """
 
-            if 'id' in filter_data:
+            if 'id' in filter_data and filter_data['id']:
                 query += ' AND ac.account_id = %(id)s'
 
-            if 'seller_id' in filter_data:
+            if 'seller_id' in filter_data and filter_data['seller_id']:
                 query += ' AND ac.user_id = %(seller_id)s'
 
-            if 'eng_name' in filter_data:
+            if 'eng_name' in filter_data and filter_data['eng_name']:
                 query += ' AND s.eng_name = %(eng_name)s'
 
-            if 'kor_name' in filter_data:
+            if 'kor_name' in filter_data and filter_data['kor_name']:
                 query += ' AND s.name = %(kor_name)s'
 
-            if 'owner_name' in filter_data:
+            if 'owner_name' in filter_data and filter_data['owner_name']:
                 query += ' AND s.owner_name = %(owner_name)s'
 
-            if 'seller_status' in filter_data:
-                query += ' AND ss.seller_status_id = %(seller_status)s'
+            if 'seller_status_id' in filter_data and filter_data['seller_status_id']:
+                query += ' AND ss.seller_status_id = %(seller_status_id)s'
 
-            if 'phone_number' in filter_data:
+            if 'phone_number' in filter_data and filter_data['phone_number']:
                 query += ' AND s.owner_number = %(phone_number)s'
 
-            if 'email' in filter_data:
+            if 'email' in filter_data and filter_data['email']:
                 query += ' AND s.owner_email = %(email)s'
 
-            if 'seller_attribute' in filter_data:
-                query += ' AND sat.seller_attribute_id = %(seller_attribute)s'
+            if 'seller_attribute_id' in filter_data and filter_data['seller_attribute_id']:
+                query += ' AND sat.seller_attribute_id = %(seller_attribute_id)s'
 
-            if 'start_time' in filter_data and 'end_time' in filter_data:
+            if 'start_time' in filter_data \
+                    and 'end_time' in filter_data \
+                    and filter_data['start_time'] \
+                    and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
-            elif 'start_time' in filter_data:
+
+            elif 'start_time' in filter_data and filter_data['start_time']:
                 query += ' AND ac.created_at >= %(start_time)s'
-            elif 'end_time' in filter_data:
+
+            elif 'end_time' in filter_data and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 query += ' AND ac.created_at <= %(end_time)s'
 
-            query += ' LIMIT %(offset)s, %(limit)s'
+            if 'sort_type' in filter_data and filter_data['sort_type']:
+                if '-id' == filter_data['sort_type']:
+                    query += 'ORDER BY -ac.account_id'
+                elif 'id' == filter_data['sort_type']:
+                    query += 'ORDER BY ac.account_id'
+            else:
+                query += 'ORDER BY -ac.account_id'
+
+            if 'offset' in filter_data and 'limit' in filter_data:
+                filter_data['offset'] = int(filter_data['offset'])
+                filter_data['limit'] = int(filter_data['limit'])
+                query += ' LIMIT %(offset)s, %(limit)s'
 
             sellers = cursor.execute(query, filter_data)
 
             if not sellers:
                 raise Exception("seller Data 없음")
+            result = cursor.fetchall()
 
-            return cursor.fetchall()
+            return result
 
     # noinspection PyMethodMayBeStatic
     def get_seller_count(self, filter_data, conn):
@@ -181,43 +196,56 @@ class SellerDao:
                 WHERE end_date='9999-12-31' AND is_deleted=0
             """
 
-            if 'id' in filter_data:
+            if 'id' in filter_data and filter_data['id']:
                 query += ' AND ac.account_id = %(id)s'
 
-            if 'seller_id' in filter_data:
+            if 'seller_id' in filter_data and filter_data['seller_id']:
                 query += ' AND ac.user_id = %(seller_id)s'
 
-            if 'eng_name' in filter_data:
+            if 'eng_name' in filter_data and filter_data['eng_name']:
                 query += ' AND s.eng_name = %(eng_name)s'
 
-            if 'kor_name' in filter_data:
+            if 'kor_name' in filter_data and filter_data['kor_name']:
                 query += ' AND s.name = %(kor_name)s'
 
-            if 'owner_name' in filter_data:
+            if 'owner_name' in filter_data and filter_data['owner_name']:
                 query += ' AND s.owner_name = %(owner_name)s'
 
-            if 'seller_status' in filter_data:
-                query += ' AND ss.seller_status_id = %(seller_status)s'
+            if 'seller_status_id' in filter_data and filter_data['seller_status_id']:
+                query += ' AND ss.seller_status_id = %(seller_status_id)s'
 
-            if 'phone_number' in filter_data:
+            if 'phone_number' in filter_data and filter_data['phone_number']:
                 query += ' AND s.owner_number = %(phone_number)s'
 
-            if 'email' in filter_data:
+            if 'email' in filter_data and filter_data['email']:
                 query += ' AND s.owner_email = %(email)s'
 
-            if 'seller_attribute' in filter_data:
-                query += ' AND sat.seller_attribute_id = %(seller_attribute)s'
+            if 'seller_attribute_id' in filter_data and filter_data['seller_attribute_id']:
+                query += ' AND sat.seller_attribute_id = %(seller_attribute_id)s'
 
-            if 'start_time' in filter_data and 'end_time' in filter_data:
+            if 'start_time' in filter_data \
+                    and 'end_time' in filter_data \
+                    and filter_data['start_time'] \
+                    and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
-            elif 'start_time' in filter_data:
+
+            elif 'start_time' in filter_data and filter_data['start_time']:
                 query += ' AND ac.created_at >= %(start_time)s'
-            elif 'end_time' in filter_data:
+
+            elif 'end_time' in filter_data and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
                 query += ' AND ac.created_at <= %(end_time)s'
+
+            if 'sort_type' in filter_data and filter_data['sort_type']:
+                if '-id' == filter_data['sort_type']:
+                    query += 'ORDER BY -ac.account_id'
+                elif 'id' == filter_data['sort_type']:
+                    query += 'ORDER BY ac.account_id'
+            else:
+                query += 'ORDER BY -ac.account_id'
 
             seller_count = cursor.execute(query, filter_data)
 
@@ -272,7 +300,7 @@ class SellerDao:
             previous_seller_info_query = """
                 SELECT
                     seller_info_id AS previous_seller_info_id,
-                    account_id,
+                    account_id AS id,
                     seller_status_id,
                     seller_attribute_id,
                     modifier_id,
@@ -298,7 +326,7 @@ class SellerDao:
                     refund
                 FROM seller_info
                 WHERE end_date = '9999-12-31'
-                AND account_id = %(account_id)s
+                AND account_id = %(id)s
             """
 
             # 가장 최근 셀러 정보 확인
@@ -340,7 +368,7 @@ class SellerDao:
                     refund
                 )
                 VALUES (    
-                    %(account_id)s,
+                    %(id)s,
                     %(seller_status_id)s,
                     %(seller_attribute_id)s,
                     %(modifier_id)s,
