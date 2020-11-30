@@ -2,6 +2,7 @@ import bcrypt
 import jwt
 
 from config import SECRET, ALGORITHM
+from model.user_dao import UserDao
 from utils.validate import (password_validate,
                             phone_number_validate)
 from utils.exceptions import (PasswordValidationError,
@@ -131,7 +132,7 @@ class UserService:
                 if seller['seller_action_id'] else None
             } for seller in seller_list]
         }
-
+        
         return data
 
     def get_seller_status(self, conn):

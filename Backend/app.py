@@ -34,6 +34,9 @@ def create_app(test_config=None):
     # Endpoint
     UserView.create_endpoints(app, services)
 
+    # Endpoint
+    UserView.create_endpoints(app, services)
+
     @app.errorhandler(Exception)
     def handle_error(error):
         if type(error) is ApiError:
