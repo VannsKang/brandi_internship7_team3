@@ -3,9 +3,10 @@ import config
 from flask      import Flask, jsonify
 from flask_cors import CORS
 
-from model      import user_dao
-from service    import user_service
-from view       import user_view
+from model.user_dao       import UserDao
+from service.user_service import UserService
+from view.user_view       import UserView
+from utils.exceptions     import ApiError
 
 
 class Services:
@@ -24,17 +25,18 @@ def create_app(test_config=None):
         app.config.update(test_config)
 
     # Persistence Layer
-    seller_dao = user_dao.SellerDao()
+    user_dao = UserDao()
 
     # Business Layer
-    services = Services()
-    services.user_service = user_service.SellerService(seller_dao, config)
+    services = Services
+    services.user_service = UserService(user_dao, config)
 
     # Endpoint
-    user_view.SellerView.create_endpoints(app, services)
+    UserView.create_endpoints(app, services)
 
     @app.errorhandler(Exception)
     def handle_error(error):
-        return jsonify(error.error_response)
-
+        if type(error) is ApiError:
+            return jsonify({'message': 'error {}'.format(error.message)}), error.status_code
+        return jsonify({'message': 'error {}'.format(error)}), 500
     return app
