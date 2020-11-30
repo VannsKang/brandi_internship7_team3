@@ -67,7 +67,12 @@ class SellerService:
                 'phone_number'     : seller['phone_number'],
                 'email'            : seller['email'],
                 'created_at'       : seller['created_at'].strftime('%Y-%m-%d %H:%M:%S'),
-                'seller_actions'   : seller['seller_action'].split(',') if seller['seller_action'] else None
+                'seller_actions'   : [{
+                    'id'  : seller_action_id,
+                    'name': seller_action
+                } for seller_action_id, seller_action
+                    in zip(seller['seller_action_id'].split(','), seller['seller_action'].split(','))]
+                if seller['seller_action_id'] else None
             } for seller in seller_list]
         }
 
@@ -84,6 +89,15 @@ class SellerService:
         return seller_attributes
 
     def update_seller_status(self, account_info, conn):
+
+        if 'id' not in account_info:
+            raise KeyError
+
+        if 'seller_action_id' not in account_info:
+            raise KeyError
+
+        if len(account_info) != 2:
+            raise KeyError
 
         # 액션에 따른 상태 이전
         if account_info['seller_action_id'] == 1:
@@ -106,6 +120,9 @@ class SellerService:
 
         if account_info['seller_action_id'] == 7:
             account_info['seller_status_id'] = 3
+
+        if 'seller_status_id' not in account_info:
+            raise Exception("유효하지 않은 액션 값 전송")
 
         seller_status = self.seller_dao.update_seller_status(account_info, conn)
 
