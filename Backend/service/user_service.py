@@ -2,7 +2,6 @@ import bcrypt
 import jwt
 
 from config import SECRET, ALGORITHM
-from model.user_dao import UserDao
 from utils.validate import (password_validate,
                             phone_number_validate)
 from utils.exceptions import (PasswordValidationError,
@@ -178,7 +177,7 @@ class UserService:
         if account_info['seller_action_id'] == 7:
             account_info['seller_status_id'] = 3
 
-        if 'seller_status_id' not in account_info:
+        if 'seller_status_id' not in account_info and 'is_deleted' not in account_info:
             raise Exception("유효하지 않은 액션 값 전송")
 
         seller_status = self.user_dao.update_seller_status(account_info, conn)

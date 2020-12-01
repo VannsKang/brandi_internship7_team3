@@ -159,11 +159,11 @@ class UserDao:
 
             if 'sort_type' in filter_data and filter_data['sort_type']:
                 if '-id' == filter_data['sort_type']:
-                    query += 'ORDER BY -ac.account_id'
+                    query += ' ORDER BY -ac.account_id'
                 elif 'id' == filter_data['sort_type']:
-                    query += 'ORDER BY ac.account_id'
+                    query += ' ORDER BY ac.account_id'
             else:
-                query += 'ORDER BY -ac.account_id'
+                query += ' ORDER BY -ac.account_id'
 
             if 'offset' in filter_data and 'limit' in filter_data:
                 filter_data['offset'] = int(filter_data['offset'])
@@ -174,9 +174,8 @@ class UserDao:
 
             if not sellers:
                 raise Exception("seller Data 없음")
-            result = cursor.fetchall()
 
-            return result
+            return cursor.fetchall()
 
     # noinspection PyMethodMayBeStatic
     def get_seller_count(self, filter_data, conn):
@@ -241,11 +240,11 @@ class UserDao:
 
             if 'sort_type' in filter_data and filter_data['sort_type']:
                 if '-id' == filter_data['sort_type']:
-                    query += 'ORDER BY -ac.account_id'
+                    query += ' ORDER BY -ac.account_id'
                 elif 'id' == filter_data['sort_type']:
-                    query += 'ORDER BY ac.account_id'
+                    query += ' ORDER BY ac.account_id'
             else:
-                query += 'ORDER BY -ac.account_id'
+                query += ' ORDER BY -ac.account_id'
 
             seller_count = cursor.execute(query, filter_data)
 
@@ -273,7 +272,9 @@ class UserDao:
     def get_seller_attributes(self, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
-                SELECT *
+                SELECT 
+                    seller_attribute_id,
+                    name
                 FROM seller_attributes
             """
 
