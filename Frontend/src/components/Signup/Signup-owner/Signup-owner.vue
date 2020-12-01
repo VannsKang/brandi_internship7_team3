@@ -33,17 +33,17 @@
     </a-form-item>
     <div class="signup-form-extra">
       <a-icon type="info-circle" theme="filled" />
-      <span
-        >입점 신청 후 브랜디 담당자가 연락을 드릴 수 있으니 정확한 정보를
-        기입해주세요.</span
-      >
+      <span>
+        입점 신청 후 브랜디 담당자가 연락을 드릴 수 있으니 정확한 정보를
+        기입해주세요.
+      </span>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Signup-owner",
+  name: "SignupOwner",
 };
 </script>
 
@@ -55,7 +55,6 @@ export default {
     &-item {
       margin-bottom: 8px;
     }
-    /* &-explain */
   }
 
   &-title {

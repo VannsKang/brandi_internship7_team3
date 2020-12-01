@@ -6,8 +6,8 @@
       <a-radio-group v-decorator="['seller_attribute_id']">
         <a-radio
           v-for="seller in seller_attribute_id"
-          :value="seller.id"
-          :key="seller.id"
+          :value="seller.seller_attribute_id"
+          :key="seller.seller_attribute_id"
         >
           {{ seller.name }}
         </a-radio>
@@ -83,34 +83,45 @@
 </template>
 
 <script>
-import { LOAD_SELLER_TYPE } from "../../../config";
+import { mapState, mapActions } from "vuex";
+import { SELLER_ATTRIBUTE_ID } from "../../../config";
 
 export default {
   name: "Signup-seller",
 
   data() {
-    return {
-      seller_attribute_id: [],
-    };
+    return {};
+  },
+
+  computed: {
+    // SECTION vuex
+    ...mapState({
+      seller_attribute_id: ({ sellers }) => sellers.seller_attribute_id,
+    }),
   },
 
   methods: {
-    async loadSellerType() {
+    // REVIEW gonna get data from API?
+    async getSellerAttribute() {
       try {
-        const response = await this.$http.get(LOAD_SELLER_TYPE);
+        const response = await this.$http.get(SELLER_ATTRIBUTE_ID);
         const validation = response && response.status === 200;
         !validation && new Error("cannot fetch the data");
-        const { seller_attribute_id } = await response.data;
-        this.seller_attribute_id = seller_attribute_id;
+        console.log(response);
+        const result = response.data;
+        this.updateSellerAttributeAction(result);
       } catch (error) {
         console.log("!!error fetch data!!");
       }
     },
+
+    // SECTION vuex
+    ...mapActions("sellers", ["updateSellerAttributeAction"]),
   },
 
   // SECTION lifecycle
   mounted() {
-    this.loadSellerType();
+    this.getSellerAttribute();
   },
 };
 </script>

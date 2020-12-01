@@ -1,233 +1,262 @@
 {
   "columns": [
     {
-      "title": "번호",
       "dataIndex": "id",
-      "key": "id"
+      "title": "번호"
     },
     {
-      "title": "셀러아이디",
       "dataIndex": "seller_id",
-      "key": "seller_id"
+      "title": "셀러아이디"
     },
     {
-      "title": "영문이름",
       "dataIndex": "eng_name",
-      "key": "eng_name"
+      "title": "영문이름"
     },
     {
-      "title": "한글이름",
       "dataIndex": "kor_name",
-      "key": "kor_name"
+      "title": "한글이름"
     },
     {
-      "title": "담당자이름",
       "dataIndex": "owner_name",
-      "key": "owner_name"
+      "title": "담당자이름"
     },
     {
-      "title": "셀러상태",
       "dataIndex": "seller_status",
-      "key": "seller_status"
+      "title": "셀러상태"
     },
     {
-      "title": "담당자연락처",
       "dataIndex": "phone_number",
-      "key": "phone_number"
+      "title": "담당자연락처"
     },
     {
-      "title": "담당자이메일",
       "dataIndex": "email",
-      "key": "email"
+      "title": "담당자이메일"
     },
     {
-      "title": "셀러속성",
       "dataIndex": "seller_attribute",
-      "key": "seller_attribute"
+      "title": "셀러속성"
     },
-
     {
-      "title": "등록일시",
       "dataIndex": "created_at",
-      "key": "created_at"
+      "title": "등록일시"
     },
-
     {
-      "title": "Actions",
       "dataIndex": "seller_actions",
-      "key": "seller_actions"
+      "title": "Actions"
     }
   ],
-
   "data": [
     {
-      "id": 22408,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리"]
+      "created_at": "2020-12-15 00:00:00",
+      "email": "bbb@naver.com",
+      "eng_name": "soso",
+      "id": 22,
+      "kor_name": "진소형",
+      "owner_name": "이지상",
+      "phone_number": "010-2223-5555",
+      "seller_actions": [
+        {
+          "id": "3",
+          "name": "휴점 신청"
+        },
+        {
+          "id": "5",
+          "name": "퇴점 신청 처리"
+        }
+      ],
+      "seller_attribute": "뷰티",
+      "seller_id": "seller_test13",
+      "seller_status": "입점"
     },
     {
-      "id": 22407,
-      "seller_id": "rlawlgml444",
-      "kor_name": "jihui",
-      "eng_name": "jihui",
-      "owner_name": "",
-      "seller_status": "입점대기",
-      "phone_number": "010-5039-2820",
-      "email": "email@email.com",
+      "created_at": "2020-12-15 00:00:00",
+      "email": "bbb@aaaa.com",
+      "eng_name": "sinjun",
+      "id": 21,
+      "kor_name": "신준형",
+      "owner_name": "이지인",
+      "phone_number": "010-2223-5555",
+      "seller_actions": [
+        {
+          "id": "3",
+          "name": "휴점 신청"
+        },
+        {
+          "id": "5",
+          "name": "퇴점 신청 처리"
+        }
+      ],
+      "seller_attribute": "뷰티",
+      "seller_id": "seller_test12",
+      "seller_status": "입점"
+    },
+    {
+      "created_at": "2020-12-15 00:00:00",
+      "email": "bbb@abcd.com",
+      "eng_name": "soso",
+      "id": 20,
+      "kor_name": "진소형",
+      "owner_name": "이순상",
+      "phone_number": "010-2223-5555",
+      "seller_actions": [
+        {
+          "id": "4",
+          "name": "휴점 해제"
+        },
+        {
+          "id": "5",
+          "name": "퇴점 신청 처리"
+        }
+      ],
+      "seller_attribute": "뷰티",
+      "seller_id": "seller_test11",
+      "seller_status": "휴점"
+    },
+    {
+      "created_at": "2020-12-12 00:00:00",
+      "email": "abc@abc.com",
+      "eng_name": "cafe",
+      "id": 19,
+      "kor_name": "김대길",
+      "owner_name": "김호수",
+      "phone_number": "010-2223-5555",
+      "seller_actions": [
+        {
+          "id": "3",
+          "name": "휴점 신청"
+        },
+        {
+          "id": "5",
+          "name": "퇴점 신청 처리"
+        }
+      ],
+      "seller_attribute": "로드샵",
+      "seller_id": "seller_test10",
+      "seller_status": "입점"
+    },
+    {
+      "created_at": "2020-12-15 00:00:00",
+      "email": "abc@abc.com",
+      "eng_name": "olafe",
+      "id": 18,
+      "kor_name": "눈사람",
+      "owner_name": "엘사",
+      "phone_number": "010-2223-5555",
+      "seller_actions": [
+        {
+          "id": "4",
+          "name": "휴점 해제"
+        },
+        {
+          "id": "5",
+          "name": "퇴점 신청 처리"
+        }
+      ],
+      "seller_attribute": "로드샵",
+      "seller_id": "seller_test99",
+      "seller_status": "휴점"
+    },
+    {
+      "created_at": "2020-12-12 00:00:00",
+      "email": "abc@abc.com",
+      "eng_name": "baba",
+      "id": 17,
+      "kor_name": "삼색이",
+      "owner_name": "김승수",
+      "phone_number": "010-2223-5555",
+      "seller_actions": [
+        {
+          "id": "4",
+          "name": "휴점 해제"
+        },
+        {
+          "id": "5",
+          "name": "퇴점 신청 처리"
+        }
+      ],
       "seller_attribute": "디자이너브랜드",
-      "created_at": "2020-11-27 11:39:44",
-      "seller_actions": ["입점 승인", "입점 거절"]
+      "seller_id": "seller_test8",
+      "seller_status": "휴점"
     },
     {
-      "id": 22406,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리"]
+      "created_at": "2020-12-06 00:00:00",
+      "email": "testA@brandi.com",
+      "eng_name": "brandi",
+      "id": 16,
+      "kor_name": "삼색이",
+      "owner_name": "김현성",
+      "phone_number": "010-8888-7776",
+      "seller_actions": [
+        {
+          "id": "1",
+          "name": "입점 승인"
+        },
+        {
+          "id": "2",
+          "name": "입점 거절"
+        }
+      ],
+      "seller_attribute": "뷰티",
+      "seller_id": "seller_test7",
+      "seller_status": "입점대기"
     },
     {
-      "id": 22405,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리"]
+      "created_at": "2020-12-06 00:00:00",
+      "email": "BBC@naver.com",
+      "eng_name": "brandi",
+      "id": 15,
+      "kor_name": "고양이",
+      "owner_name": "귀여워",
+      "phone_number": "010-5363-5666",
+      "seller_actions": [
+        {
+          "id": "1",
+          "name": "입점 승인"
+        },
+        {
+          "id": "2",
+          "name": "입점 거절"
+        }
+      ],
+      "seller_attribute": "뷰티",
+      "seller_id": "seller_test5",
+      "seller_status": "입점대기"
     },
     {
-      "id": 22404,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리", "입점 승인"]
+      "created_at": "2020-12-05 00:00:00",
+      "email": "tgogo@gogo.com",
+      "eng_name": "google",
+      "id": 14,
+      "kor_name": "수의사",
+      "owner_name": "나는담당자",
+      "phone_number": "010-2223-7746",
+      "seller_actions": [
+        {
+          "id": "4",
+          "name": "휴점 해제"
+        },
+        {
+          "id": "5",
+          "name": "퇴점 신청 처리"
+        }
+      ],
+      "seller_attribute": "뷰티",
+      "seller_id": "seller_test2",
+      "seller_status": "휴점"
     },
     {
-      "id": 22403,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리", "입점 승인"]
-    },
-    {
-      "id": 22402,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리", "입점 승인"]
-    },
-    {
-      "id": 22401,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리", "입점 승인"]
-    },
-    {
-      "id": 22400,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리", "입점 승인"]
-    },
-    {
-      "id": 22399,
-      "seller_id": "leesky123",
-      "kor_name": "하늘",
-      "eng_name": "leesky123",
-      "owner_name": "이정필",
-      "seller_status": "입점",
-      "phone_number": "010-0000-0000",
-      "email": "leejp@brandi.co.kr",
-      "seller_attribute": "쇼핑몰",
-      "created_at": "2020-11-23 14:17:52",
-      "seller_actions": ["휴점 신청", "퇴점신청 처리", "입점 승인"]
+      "created_at": "2020-12-02 00:00:00",
+      "email": "B@brandi.com",
+      "eng_name": "brandi",
+      "id": 13,
+      "kor_name": "김상수",
+      "owner_name": "김희현",
+      "phone_number": "010-5363-5355",
+      "seller_actions": null,
+      "seller_attribute": "마켓",
+      "seller_id": "seller_test1",
+      "seller_status": "퇴점"
     }
   ],
-
-  "seller_status": [
-    { "id": 1, "name": "입점대기" },
-    { "id": 2, "name": "입점" },
-    { "id": 3, "name": "퇴점" },
-    { "id": 4, "name": "퇴점대기" },
-    { "id": 5, "name": "휴점" }
-  ],
-
-  "seller_attribute_id": [
-    {
-      "id": 1,
-      "name": "쇼핑몰"
-    },
-    {
-      "id": 2,
-      "name": "마켓"
-    },
-    {
-      "id": 3,
-      "name": "로드샵"
-    },
-    {
-      "id": 4,
-      "name": "디자이너브랜드"
-    },
-    {
-      "id": 5,
-      "name": "제너럴브랜드"
-    },
-    {
-      "id": 6,
-      "name": "내셔널브랜드"
-    },
-    {
-      "id": 7,
-      "name": "뷰티"
-    }
-  ]
+  "seller_count": 21
 }

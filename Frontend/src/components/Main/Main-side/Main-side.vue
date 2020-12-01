@@ -47,7 +47,9 @@
 </template>
 
 <script>
-import { LOAD_NAV_MENU } from "../../../config";
+import { mapState } from "vuex";
+// REVIEW gonna get data from API?
+// import { LOAD_NAV_MENU } from "../../../config";
 
 export default {
   name: "Main-side",
@@ -59,8 +61,8 @@ export default {
   data() {
     return {
       collapsed: false,
-      menuItems: [],
-
+      // REVIEW gonna get data from API?
+      // menuItems:[],
       // NOTE for open current submenu only
       rootSubmenuKeys: ["sub1", "sub2", "sub3", "sub4", "sub5", "sub6", "sub7"],
       // NOTE for open the menu
@@ -85,21 +87,30 @@ export default {
       }
     },
 
-    async loadNavMenus() {
-      try {
-        const response = await this.$http.get(LOAD_NAV_MENU);
-        const validation = response && response.status === 200;
-        !validation && new Error("cannot fetch the data");
-        const { menuItems } = await response.data;
-        this.menuItems = menuItems;
-      } catch (error) {
-        console.log("!!error fetch data!!");
-      }
-    },
+    // REVIEW gonna get data from API?
+    // async loadNavMenus() {
+    //   try {
+    //     const response = await this.$http.get(LOAD_NAV_MENU);
+    //     const validation = response && response.status === 200;
+    //     !validation && new Error("cannot fetch the data");
+    //     const { menuItems } = await response.data;
+    //     this.menuItems = menuItems;
+    //   } catch (error) {
+    //     console.log("!!error fetch data!!");
+    //   }
+    // },
   },
+
+  computed: {
+    ...mapState({
+      menuItems: ({ navmenus }) => navmenus.menuItems,
+    }),
+  },
+
   // SECTION life Cycle
   mounted() {
-    this.loadNavMenus();
+    // REVIEW gonna get data from API?
+    // this.loadNavMenus();
   },
 };
 </script>

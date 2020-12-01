@@ -11,6 +11,7 @@ import "./styles/common.scss";
 // LINK component
 import App from "./App.vue";
 import Routes from "./router/Routes";
+import store from "./store";
 
 // LINK Vue 3rdparties
 Vue.use(VueRouter);
@@ -24,4 +25,5 @@ new Vue({
   components: { App },
   template: "<App/>",
   router,
+  store,
 });
