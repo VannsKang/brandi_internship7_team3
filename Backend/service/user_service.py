@@ -20,21 +20,20 @@ class UserService:
     def sign_up_account(self, user_data, conn):
         # 유저 정보 찾기
         get_user = self.user_dao.get_user(user_data, conn)
-        print(get_user)
         # 유저 정보가 없으면 가입 시킨다.
         if get_user is None:
             # 각종 validate 처리와 오류 발생
-            if password_validate(user_data.get('password1')):
+            if password_validate(user_data.get('password')):
                 raise PasswordValidationError('비밀번호는 8~20글자의 영문대소문자, 숫자, 특수문자를 조합해야 합니다.', 400)
             elif phone_number_validate(user_data.get('owner_number')):
                 raise PhoneNumberValidationError('올바른 전화번호를 입력하세요.', 400)
-            elif (user_data.get('password1')) != (user_data.get('password2')):
+            elif (user_data.get('password')) != (user_data.get('confirm_password')):
                 raise NotMatchError('비밀번호가 일치하지 않습니다.', 400)
             # validate 통과 후 회원가입
             else:
-                hashed_password = bcrypt.hashpw(user_data.get('password1').encode('utf-8'), bcrypt.gensalt())
+                hashed_password = bcrypt.hashpw(user_data.get('password').encode('utf-8'), bcrypt.gensalt())
                 decoded_password = hashed_password.decode('utf-8')
-                user_data['password1'] = decoded_password
+                user_data['password'] = decoded_password
                 sign_up_result = self.user_dao.sign_up_account(user_data, conn)
                 return sign_up_result
         # 유저 정보가 있으면 오류 발생

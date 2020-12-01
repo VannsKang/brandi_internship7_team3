@@ -38,5 +38,5 @@ def create_app(test_config=None):
     def handle_error(error):
         if type(error) is ApiError:
             return jsonify({'message': 'error {}'.format(error.message)}), error.status_code
-        return jsonify({'message': 'error {}'.format(error)}), 500
+        return jsonify({'message': 'error {}'.format(error)}), 400
     return app
