@@ -1,10 +1,12 @@
 import datetime
+import pandas as pd
+import numpy as np
 
-from openpyxl                import Workbook
 from flask                   import request, jsonify, Response
 from flask_request_validator import Param, JSON, Pattern, validate_params
 from connection              import get_connection
 from utils.exceptions        import ApiError
+from io import StringIO
 
 
 class UserView:
@@ -185,19 +187,15 @@ class UserView:
         @app.route("/seller_info/download", methods=['POST'])
         def seller_info_list_download():
             conn = None
-            work_book = None
+            output_stream = None
 
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
-                # filter_data = dict(request.args)
                 data = user_service.get_seller_list(filter_data, conn)
 
-                work_book = Workbook()
-                excel_write = work_book.active
-
-                columns = (
-                    '번호',
+                columns = [
+                    # '번호',
                     '셀러번호',
                     '관리자계정ID',
                     '셀러영문명',
@@ -207,14 +205,12 @@ class UserView:
                     '담당자이메일',
                     '셀러속성',
                     '셀러등록일',
-                    '승인여부',
-                )
-
-                excel_write.append(columns)
+                    '승인여부'
+                ]
 
                 seller_list = [
-                    {
-                        index + 1,
+                    [
+                        # index + 1,
                         seller['id'],
                         seller['seller_id'],
                         seller['eng_name'],
@@ -225,28 +221,33 @@ class UserView:
                         seller['email'],
                         seller['created_at'],
                         seller['seller_status']
-                    } for index, seller in enumerate(data['data'])]
+                    ] for index, seller in enumerate(data['data'])]
 
-                [excel_write.append(row) for row in seller_list]
+                data_frame = pd.DataFrame(np.array(seller_list), columns=columns)
+
+                output_stream = StringIO()
+                # output_stream.write(u'\ufeff')
+                data_frame.to_csv(output_stream)
 
                 now_date = datetime.datetime.now().strftime("%Y%m%d")[2:]
 
                 response = Response(
-                    work_book,
-                    content_type="text/csv; charset=utf-8"
+                    output_stream.getvalue(),
+                    content_type="text/csv; charset=utf-8",
                 )
-                response.headers["Content-Disposition"] = "attachment; filename=seller_list_{now_date}"\
+                response.headers["Content-Disposition"] = "attachment; filename=seller_list_{now_date}.csv"\
                     .format(now_date=now_date)
 
             except Exception as e:
                 return jsonify({'message': 'error {}'.format(e)}), 400
 
             else:
+                output_stream.close()
                 return response, 200
 
             finally:
                 conn.close()
-                work_book.close()
+                output_stream.close()
 
         # 셀러 정보 조회/수정
         @app.route("/seller_my_page/<int:seller_id>", methods=['POST', 'PUT'])

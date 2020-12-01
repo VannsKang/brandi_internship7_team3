@@ -15,6 +15,7 @@ def login_validate(func):
             decode = jwt.decode(token, SECRET['secret'], ALGORITHM['algorithm'])
             user = self.user_dao.get_seller_info(conn, decode)
             request.user_id = user['user_id']
+            request.class_id = user['class_id']
             return func(self, request, *args, **kwargs)
         except Exception as e:
             return jsonify({'message': 'error {}'.format(e)}), 400
