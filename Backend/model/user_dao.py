@@ -147,7 +147,7 @@ class UserDao:
                     and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
+                query += ' AND (ac.created_at >= %(start_time)s AND ac.created_at < %(end_time)s)'
 
             elif 'start_time' in filter_data and filter_data['start_time']:
                 query += ' AND ac.created_at >= %(start_time)s'
@@ -155,7 +155,7 @@ class UserDao:
             elif 'end_time' in filter_data and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND ac.created_at <= %(end_time)s'
+                query += ' AND ac.created_at < %(end_time)s'
 
             if 'sort_type' in filter_data and filter_data['sort_type']:
                 if '-id' == filter_data['sort_type']:
@@ -228,7 +228,7 @@ class UserDao:
                     and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
+                query += ' AND (ac.created_at >= %(start_time)s AND ac.created_at < %(end_time)s)'
 
             elif 'start_time' in filter_data and filter_data['start_time']:
                 query += ' AND ac.created_at >= %(start_time)s'
@@ -236,7 +236,7 @@ class UserDao:
             elif 'end_time' in filter_data and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND ac.created_at <= %(end_time)s'
+                query += ' AND ac.created_at < %(end_time)s'
 
             if 'sort_type' in filter_data and filter_data['sort_type']:
                 if '-id' == filter_data['sort_type']:
