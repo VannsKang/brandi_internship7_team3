@@ -155,31 +155,25 @@ class UserService:
         if len(account_info) != 2:
             raise KeyError
 
-        # 액션에 따른 상태 이전
-        if account_info['seller_action_id'] == 1:
-            account_info['seller_status_id'] = 2
+        now = self.user_dao.get_now_time(conn)
+        account_info['now'] = now['now']
 
-        if account_info['seller_action_id'] == 2:
+        previous_seller_info = self.user_dao.get_seller(account_info, conn)
+        previous_seller_info['now'] = now['now']
+
+        if previous_seller_info['is_deleted']:
+            raise Exception("삭제된 셀러 입니다.")
+
+        seller_status = self.user_dao.get_seller_action_to_status(account_info, conn)
+
+        if seller_status['seller_status_id'] is None:
             account_info['is_deleted'] = 1
+        else:
+            account_info['seller_status_id'] = seller_status['seller_status_id']
 
-        if account_info['seller_action_id'] == 3:
-            account_info['seller_status_id'] = 5
+        account_info = dict(previous_seller_info, **account_info)
 
-        if account_info['seller_action_id'] == 4:
-            account_info['seller_status_id'] = 2
+        self.user_dao.insert_seller_info(account_info, conn)
+        updated_seller = self.user_dao.update_seller_info(previous_seller_info, conn)
 
-        if account_info['seller_action_id'] == 5:
-            account_info['seller_status_id'] = 4
-
-        if account_info['seller_action_id'] == 6:
-            account_info['seller_status_id'] = 2
-
-        if account_info['seller_action_id'] == 7:
-            account_info['seller_status_id'] = 3
-
-        if 'seller_status_id' not in account_info and 'is_deleted' not in account_info:
-            raise Exception("유효하지 않은 액션 값 전송")
-
-        seller_status = self.user_dao.update_seller_status(account_info, conn)
-
-        return seller_status
+        return updated_seller
