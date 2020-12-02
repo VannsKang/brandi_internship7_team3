@@ -1,8 +1,10 @@
 import bcrypt
 import jwt
+import pandas as pd
+import numpy as np
 
-from config import SECRET, ALGORITHM
-from utils.validate import (password_validate,
+from config           import SECRET, ALGORITHM
+from utils.validate   import (password_validate,
                             phone_number_validate)
 from utils.exceptions import (PasswordValidationError,
                               PhoneNumberValidationError,
@@ -133,6 +135,38 @@ class UserService:
         
         return data
 
+    def create_excel_seller_info(self, seller_info):
+        columns = [
+            '셀러번호',
+            '관리자계정ID',
+            '셀러영문명',
+            '셀러한글명',
+            '담당자명',
+            '담당자연락처',
+            '담당자이메일',
+            '셀러속성',
+            '셀러등록일',
+            '승인여부'
+        ]
+
+        seller_list = [
+            [
+                seller['id'],
+                seller['seller_id'],
+                seller['eng_name'],
+                seller['kor_name'],
+                seller['seller_attribute'],
+                seller['owner_name'],
+                seller['phone_number'],
+                seller['email'],
+                seller['created_at'],
+                seller['seller_status']
+            ] for seller in seller_info['data']]
+
+        data_frame = pd.DataFrame(np.array(seller_list), columns=columns)
+
+        return data_frame
+
     def get_seller_status(self, conn):
         seller_status = self.user_dao.get_seller_status(conn)
 
@@ -144,7 +178,6 @@ class UserService:
         return seller_attributes
 
     def update_seller_status(self, account_info, conn):
-
         if 'id' not in account_info:
             raise KeyError
 
@@ -154,31 +187,57 @@ class UserService:
         if len(account_info) != 2:
             raise KeyError
 
-        # 액션에 따른 상태 이전
-        if account_info['seller_action_id'] == 1:
-            account_info['seller_status_id'] = 2
+        now = self.user_dao.get_now_time(conn)
+        account_info['now'] = now['now']
 
-        if account_info['seller_action_id'] == 2:
+        previous_seller_info = self.user_dao.get_seller(account_info, conn)
+        previous_seller_info['now'] = now['now']
+
+        if previous_seller_info['is_deleted']:
+            raise Exception("삭제된 셀러 입니다.")
+
+        seller_status = self.user_dao.get_seller_action_to_status(account_info, conn)
+
+        if seller_status['seller_status_id'] is None:
             account_info['is_deleted'] = 1
+        else:
+            account_info['seller_status_id'] = seller_status['seller_status_id']
 
-        if account_info['seller_action_id'] == 3:
-            account_info['seller_status_id'] = 5
+        account_info = dict(previous_seller_info, **account_info)
 
-        if account_info['seller_action_id'] == 4:
-            account_info['seller_status_id'] = 2
+        self.user_dao.insert_seller_info(account_info, conn)
+        updated_seller = self.user_dao.update_seller_info(previous_seller_info, conn)
 
-        if account_info['seller_action_id'] == 5:
-            account_info['seller_status_id'] = 4
+        return updated_seller
 
-        if account_info['seller_action_id'] == 6:
-            account_info['seller_status_id'] = 2
+    def update_seller_info(self, account_info, conn):
 
-        if account_info['seller_action_id'] == 7:
-            account_info['seller_status_id'] = 3
+        return
 
-        if 'seller_status_id' not in account_info and 'is_deleted' not in account_info:
-            raise Exception("유효하지 않은 액션 값 전송")
+    def get_seller_info(self, account_info, conn):
+        found_seller_info = self.user_dao.get_seller(account_info, conn)
 
-        seller_status = self.user_dao.update_seller_status(account_info, conn)
+        seller_info = {
+            'seller_profile'      : found_seller_info['seller_profile'],
+            'seller_status_id'    : found_seller_info['seller_status_id'],
+            'seller_attribute_id' : found_seller_info['seller_attribute_id'],
+            'kor_name'            : found_seller_info['name'],
+            'eng_name'            : found_seller_info['eng_name'],
+            'seller_id'           : found_seller_info['seller_id'],
+            'seller_background'   : found_seller_info['seller_background'],
+            'seller_intro'        : found_seller_info['seller_intro'],
+            'seller_detail'       : found_seller_info['seller_detail'],
+            'owner_name'          : found_seller_info['owner_name'],
+            'owner_number'        : found_seller_info['owner_number'],
+            'owner_email'         : found_seller_info['owner_email'],
+            'cs_number'           : found_seller_info['cs_number'],
+            'zipcode'             : found_seller_info['zipcode'],
+            'first_address'       : found_seller_info['first_address'],
+            'last_address'        : found_seller_info['last_address'],
+            'open_time'           : found_seller_info['open_time'],
+            'close_time'          : found_seller_info['close_time'],
+            'delivery'            : found_seller_info['delivery'],
+            'refund'              : found_seller_info['refund'],
+        }
 
-        return seller_status
+        return seller_info

@@ -148,7 +148,7 @@ class UserDao:
                     and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
+                query += ' AND (ac.created_at >= %(start_time)s AND ac.created_at < %(end_time)s)'
 
             elif 'start_time' in filter_data and filter_data['start_time']:
                 query += ' AND ac.created_at >= %(start_time)s'
@@ -156,7 +156,7 @@ class UserDao:
             elif 'end_time' in filter_data and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND ac.created_at <= %(end_time)s'
+                query += ' AND ac.created_at < %(end_time)s'
 
             if 'sort_type' in filter_data and filter_data['sort_type']:
                 if '-id' == filter_data['sort_type']:
@@ -229,7 +229,7 @@ class UserDao:
                     and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND (ac.created_at BETWEEN %(start_time)s AND %(end_time)s)'
+                query += ' AND (ac.created_at >= %(start_time)s AND ac.created_at < %(end_time)s)'
 
             elif 'start_time' in filter_data and filter_data['start_time']:
                 query += ' AND ac.created_at >= %(start_time)s'
@@ -237,7 +237,7 @@ class UserDao:
             elif 'end_time' in filter_data and filter_data['end_time']:
                 end_time = datetime.datetime.strptime(filter_data['end_time'], '%Y-%m-%d')
                 filter_data['end_time'] = (end_time + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
-                query += ' AND ac.created_at <= %(end_time)s'
+                query += ' AND ac.created_at < %(end_time)s'
 
             if 'sort_type' in filter_data and filter_data['sort_type']:
                 if '-id' == filter_data['sort_type']:
@@ -258,7 +258,9 @@ class UserDao:
     def get_seller_status(self, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
-                SELECT *
+                SELECT 
+                    seller_status_id,
+                    name
                 FROM seller_status
             """
 
@@ -287,62 +289,79 @@ class UserDao:
             return cursor.fetchall()
 
     # noinspection PyMethodMayBeStatic
-    def update_seller_status(self, account_info, conn):
+    def get_seller_action_to_status(self, account_info, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
-
-            # 현재 시간 가져오기
-            cursor.execute("""
-                SELECT now()
-            """)
-
-            # 현재 시간 저장
-            now = cursor.fetchone()
-            account_info['now'] = now['now()']
-
-            previous_seller_info_query = """
-                SELECT
-                    seller_info_id AS previous_seller_info_id,
-                    account_id AS id,
-                    seller_status_id,
-                    seller_attribute_id,
-                    modifier_id,
-                    is_deleted,
-                    password,
-                    start_date,
-                    name,
-                    eng_name,
-                    cs_number,
-                    owner_name,
-                    owner_number,
-                    owner_email,
-                    seller_profile,
-                    seller_background,
-                    seller_intro,
-                    seller_detail,
-                    zipcode,
-                    first_address,
-                    last_address,
-                    open_time,
-                    close_time,
-                    delivery,
-                    refund
-                FROM seller_info
-                WHERE end_date = '9999-12-31'
-                AND account_id = %(id)s
+            query = """
+                SELECT 
+                    sas.status_id AS seller_status_id
+                FROM seller_action_to_status AS sas
+                RIGHT JOIN seller_actions AS sa ON sas.action_id = sa.seller_action_id
+                WHERE sa.seller_action_id = %(seller_action_id)s
             """
 
-            # 가장 최근 셀러 정보 확인
-            previous_seller_info_check = cursor.execute(previous_seller_info_query, account_info)
+            seller_status = cursor.execute(query, account_info)
 
-            # 해당 셀러 정보가 없을 시 에러처리
-            if not previous_seller_info_check:
+            if not seller_status:
+                raise Exception("유효하지 않은 액션 값 전송")
+            return cursor.fetchone()
+
+    # noinspection PyMethodMayBeStatic
+    def get_now_time(self, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            cursor.execute("""
+                SELECT now() AS now
+            """)
+
+            return cursor.fetchone()
+
+    # noinspection PyMethodMayBeStatic
+    def get_seller(self, seller_info, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+                SELECT
+                    s.seller_info_id AS seller_info_id,
+                    s.account_id AS id,
+                    ac.user_id AS seller_id,
+                    s.seller_status_id AS seller_status_id,
+                    s.seller_attribute_id AS seller_attribute_id,
+                    s.modifier_id AS modifier_id,
+                    s.is_deleted AS is_deleted,
+                    s.password AS password,
+                    s.start_date AS start_date,
+                    s.name AS name,
+                    s.eng_name AS eng_name,
+                    s.cs_number AS cs_number,
+                    s.owner_name AS owner_name,
+                    s.owner_number AS owner_number,
+                    s.owner_email AS owner_email,
+                    s.seller_profile AS seller_profile,
+                    s.seller_background AS seller_background,
+                    s.seller_intro AS seller_intro,
+                    s.seller_detail AS seller_detail,
+                    s.zipcode AS zipcode,
+                    s.first_address AS first_address,
+                    s.last_address AS last_address,
+                    s.open_time AS open_time,
+                    s.close_time AS close_time,
+                    s.delivery AS delivery,
+                    s.refund AS refund
+                FROM seller_info AS s
+                INNER JOIN accounts AS ac ON s.account_id=ac.account_id
+                WHERE end_date = '9999-12-31'
+                AND s.account_id = %(id)s
+            """
+
+            seller_info = cursor.execute(query, seller_info)
+
+            if not seller_info:
                 raise Exception("seller Data 없음")
 
-            # 가장 최근 셀러 정보 가져옴
-            previous_seller_info = cursor.fetchone()
-            previous_seller_info['now'] = now['now()']
+            return cursor.fetchone()
 
-            insert_seller_info_query = """
+    # noinspection PyMethodMayBeStatic
+    def insert_seller_info(self, seller_info, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
                 INSERT INTO seller_info (
                     account_id,
                     seller_status_id,
@@ -397,25 +416,25 @@ class UserDao:
                 )
              """
 
-            # 수정할 셀러 정보를 갱신
-            account_info = dict(previous_seller_info, **account_info)
-
-            # 수정 내용이 적용된 셀러 정보를 생성
-            insert_seller_info_check = cursor.execute(insert_seller_info_query, account_info)
+            insert_seller_info_check = cursor.execute(query, seller_info)
 
             if not insert_seller_info_check:
                 raise Exception('셀러 상태 정보 갱신 실패')
 
-            update_previous_seller_info = """
+            return insert_seller_info_check
+
+    # noinspection PyMethodMayBeStatic
+    def update_seller_info(self, seller_info, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
                 UPDATE seller_info
                 SET end_date = %(now)s
-                WHERE seller_info_id = %(previous_seller_info_id)s
+                WHERE seller_info_id = %(seller_info_id)s            
             """
 
-            # 이전 셀러 정보의 end_date 를 현재 시간으로 수정
-            update_seller_info_check = cursor.execute(update_previous_seller_info, previous_seller_info)
+            update_seller_info = cursor.execute(query, seller_info)
 
-            if not update_seller_info_check:
+            if not update_seller_info:
                 raise Exception('이전 셀러 정보 이력 업데이트 실패')
 
-            return cursor.fetchone()
+            return update_seller_info
