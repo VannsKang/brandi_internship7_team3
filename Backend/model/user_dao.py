@@ -318,34 +318,36 @@ class UserDao:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             query = """
                 SELECT
-                    seller_info_id AS seller_info_id,
-                    account_id AS id,
-                    seller_status_id,
-                    seller_attribute_id,
-                    modifier_id,
-                    is_deleted,
-                    password,
-                    start_date,
-                    name,
-                    eng_name,
-                    cs_number,
-                    owner_name,
-                    owner_number,
-                    owner_email,
-                    seller_profile,
-                    seller_background,
-                    seller_intro,
-                    seller_detail,
-                    zipcode,
-                    first_address,
-                    last_address,
-                    open_time,
-                    close_time,
-                    delivery,
-                    refund
-                FROM seller_info
+                    s.seller_info_id AS seller_info_id,
+                    s.account_id AS id,
+                    ac.user_id AS seller_id,
+                    s.seller_status_id AS seller_status_id,
+                    s.seller_attribute_id AS seller_attribute_id,
+                    s.modifier_id AS modifier_id,
+                    s.is_deleted AS is_deleted,
+                    s.password AS password,
+                    s.start_date AS start_date,
+                    s.name AS name,
+                    s.eng_name AS eng_name,
+                    s.cs_number AS cs_number,
+                    s.owner_name AS owner_name,
+                    s.owner_number AS owner_number,
+                    s.owner_email AS owner_email,
+                    s.seller_profile AS seller_profile,
+                    s.seller_background AS seller_background,
+                    s.seller_intro AS seller_intro,
+                    s.seller_detail AS seller_detail,
+                    s.zipcode AS zipcode,
+                    s.first_address AS first_address,
+                    s.last_address AS last_address,
+                    s.open_time AS open_time,
+                    s.close_time AS close_time,
+                    s.delivery AS delivery,
+                    s.refund AS refund
+                FROM seller_info AS s
+                INNER JOIN accounts AS ac ON s.account_id=ac.account_id
                 WHERE end_date = '9999-12-31'
-                AND account_id = %(id)s
+                AND s.account_id = %(id)s
             """
 
             seller_info = cursor.execute(query, seller_info)
