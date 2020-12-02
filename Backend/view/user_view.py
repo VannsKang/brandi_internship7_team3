@@ -15,8 +15,8 @@ class UserView:
         @app.route('/sign-up', methods=['POST'])
         @validate_params(
             Param('user_id', JSON, str, rules=[Pattern(r'[a-zA-Z0-9]')]),
-            Param('password1', JSON, str),
-            Param('password2', JSON, str),
+            Param('password', JSON, str),
+            Param('confirm_password', JSON, str),
             Param('seller_attribute_id', JSON, int),
             Param('owner_number', JSON, str),
             Param('name', JSON, str, rules=[Pattern(r'[ㄱ-힣a-zA-Z0-9]')]),
@@ -28,8 +28,8 @@ class UserView:
             conn = None
             user_data = {
                 'user_id': args[0],
-                'password1': args[1],
-                'password2': args[2],
+                'password': args[1],
+                'confirm_password': args[2],
                 'seller_attribute_id': args[3],
                 'owner_number': args[4],
                 'name': args[5],

@@ -5,6 +5,7 @@ from utils.exceptions import InsertFailError
 
 class UserDao:
     # 회원가입 정보 저장
+
     def sign_up_account(self, user_data, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             sign_up_sql = """
@@ -37,7 +38,7 @@ class UserDao:
                     %(account_id)s,
                     %(seller_attribute_id)s,
                     (select class_id from accounts where account_id = %(account_id)s),
-                    %(password1)s,
+                    %(password)s,
                     %(owner_number)s,
                     %(name)s,
                     %(eng_name)s,

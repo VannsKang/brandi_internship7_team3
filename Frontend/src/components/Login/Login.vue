@@ -9,12 +9,13 @@
           class="login-form"
           @submit.prevent="handleSubmit"
         >
-          <h3 class="form-title">브랜디 어드민 로그인</h3>
+          <h3 class="form-title">
+            브랜디 어드민 로그인
+          </h3>
           <a-form-item class="input-field">
             <a-input
-              class="input-item"
               v-decorator="[
-                'userName',
+                'user_id',
                 {
                   rules: [
                     {
@@ -24,13 +25,12 @@
                   ],
                 },
               ]"
+              class="input-item"
               placeholder="셀러 아이디"
-            >
-            </a-input>
+            />
           </a-form-item>
           <a-form-item class="input-field">
             <a-input
-              class="input-item"
               v-decorator="[
                 'password',
                 {
@@ -42,11 +42,11 @@
                   ],
                 },
               ]"
+              class="input-item"
               type="password"
               placeholder="셀러 비밀번호"
-              autoComplete
-            >
-            </a-input>
+              autocomplete
+            />
           </a-form-item>
 
           <a-form-item>
@@ -72,8 +72,14 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
+// LINK components
 import loginLogo from "../components/Login-logo/Login-logo";
 import loginFooter from "../components/Login-footer/Login-footer";
+
+// LINK API
+import { SIGNIN_API } from "../../config";
 
 export default {
   name: "Login",
@@ -87,16 +93,38 @@ export default {
     return {};
   },
 
+  computed: {},
+
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "normal_login" });
   },
 
   methods: {
     handleSubmit(e) {
-      this.form.validateFields((err, values) => {
-        !err && console.log("Received values of form: ", values);
+      this.form.validateFields(async (err, values) => {
+        // NOTE mockdata
+        // !err && console.log("Received values of form: ", values);
+        // if (!err) {
+        //   const token = "thisismocktoken";
+        //   console.log(token);
+        //   this.getTokenAction({ token: token, user_id: values.user_id });
+        //   this.$router.push("/main/seller");
+        // }
+        try {
+          const response = await this.$http.post(SIGNIN_API, values);
+          const validation = response && response.status === 200;
+          !validation && new Error("cannot fetch the data");
+          const { message, token } = response.data;
+          console.log(message, values.user_id);
+          this.getTokenAction({ token: token, user_id: values.user_id });
+          message === "SUCCESS!" && this.$router.push("/main/seller");
+        } catch (error) {
+          console.log("!!error fetch data!!");
+        }
       });
     },
+
+    ...mapActions("users", ["getTokenAction"]),
   },
 };
 </script>

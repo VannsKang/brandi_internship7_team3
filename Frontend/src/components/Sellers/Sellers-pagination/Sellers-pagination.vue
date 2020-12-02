@@ -5,19 +5,25 @@
       <a-button
         data-id="minus"
         @click="controlPages"
-        :disabled="number.value <= 1"
+        :disabled="page_number <= 1"
       >
         <a-icon type="left" />
       </a-button>
-      <a-input-number v-model="number.value" />
-      <a-button data-id="plus" @click="controlPages">
+      <!-- SECTION pagenation number -->
+      <a-input-number v-model="page_number" />
+
+      <a-button
+        data-id="plus"
+        @click="controlPages"
+        :disabled="page_number >= Math.ceil(seller_count / currentPagination)"
+      >
         <a-icon type="right" />
       </a-button>
     </div>
-    <span>of {{ Math.floor(data.length / currentPage) }} | View</span>
+    <span>of {{ Math.ceil(seller_count / currentPagination) }} | View</span>
     <a-select
       class="sellers-content-main-pagination-group"
-      :default-value="currentPage"
+      :value="currentPagination"
       @change="controlPagesDrop"
     >
       <a-select-option
@@ -28,45 +34,53 @@
         {{ page }}
       </a-select-option>
     </a-select>
-    <span>records | Found total {{ data.length }} records</span>
+    <span>records | Found total {{ seller_count }} records</span>
   </div>
 </template>
 
 <script>
-const pageControl = [10, 20, 50, 100, 150];
+import { mapState } from "vuex";
+
 export default {
   name: "Sellers-pagination",
 
   props: {
-    data: {
-      type: Array,
+    controlPages: {
+      type: Function,
+      required: true,
+    },
+
+    controlPagesDrop: {
+      type: Function,
+      required: true,
+    },
+
+    page_number: {
+      type: Number,
+      required: true,
+    },
+
+    seller_count: {
+      type: Number,
+      required: true,
+    },
+
+    currentPagination: {
+      type: Number,
       required: true,
     },
   },
 
   data() {
-    return {
-      number: {
-        value: 1,
-      },
-      pageControl,
-      currentPage: 10,
-    };
+    return {};
   },
 
-  methods: {
-    controlPages(e) {
-      const { id } = e.target.dataset;
-      id === "minus" && this.number.value--;
-      id === "plus" && this.number.value++;
+  methods: {},
 
-      //TODO get query string for next page
-    },
-
-    controlPagesDrop(value) {
-      console.log(value);
-      this.currentPage = value;
-    },
+  computed: {
+    ...mapState({
+      pageControl: ({ sellers }) => sellers.pageControl,
+    }),
   },
 };
 </script>
