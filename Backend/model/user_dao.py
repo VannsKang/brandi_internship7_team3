@@ -162,9 +162,9 @@ class UserDao:
                 if '-id' == filter_data['sort_type']:
                     query += ' ORDER BY -ac.account_id'
                 elif 'id' == filter_data['sort_type']:
-                    query += ' ORDER BY ac.account_id'
+                    query += ' ORDER BY ac.account_id ASC'
             else:
-                query += ' ORDER BY -ac.account_id'
+                query += ' ORDER BY ac.account_id DESC'
 
             if 'offset' in filter_data and 'limit' in filter_data:
                 filter_data['offset'] = int(filter_data['offset'])
@@ -243,9 +243,9 @@ class UserDao:
                 if '-id' == filter_data['sort_type']:
                     query += ' ORDER BY -ac.account_id'
                 elif 'id' == filter_data['sort_type']:
-                    query += ' ORDER BY ac.account_id'
+                    query += ' ORDER BY ac.account_id ASC'
             else:
-                query += ' ORDER BY -ac.account_id'
+                query += ' ORDER BY ac.account_id DESC'
 
             seller_count = cursor.execute(query, filter_data)
 

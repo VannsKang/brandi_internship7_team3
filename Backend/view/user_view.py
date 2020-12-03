@@ -118,6 +118,7 @@ class UserView:
                 if request.method == 'PUT':
                     account_info = request.get_json()
                     user_service.update_seller_status(account_info, conn)
+                    conn.commit()
                     return jsonify({'message': 'SUCCESS'}), 200
 
             except KeyError:
@@ -243,6 +244,7 @@ class UserView:
                 return jsonify({'message': 'error {}'.format(e)}), 400
 
             else:
+                conn.commit()
                 return jsonify({'message': 'SUCCESS'}), 200
 
             finally:

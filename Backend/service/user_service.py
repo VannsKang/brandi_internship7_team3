@@ -253,7 +253,3 @@ class UserService:
         seller_profile = seller_image['seller_image']
         self.s3.put_object(Body=seller_profile, Bucket='brandistorage', Key='upload_test_aws.png')
         return
-
-    def download_seller_image(self, conn):
-        # self.s3.download_fileobj('brandistorage', )
-        return
