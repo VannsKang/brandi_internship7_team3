@@ -251,7 +251,7 @@ class UserService:
     def upload_seller_image(self, seller_image, conn):
 
         seller_profile = seller_image['seller_image']
-        self.s3.put_object(Body=seller_profile, Bucket='brandistorage', Key='upload_test_aws.png')
+        self.s3.upload_fileobj(seller_profile, 'brandistorage', 'upload_test_aws.png')
         return
 
     def download_seller_image(self, conn):
