@@ -5,6 +5,7 @@ from flask_request_validator import Param, JSON, Pattern, validate_params
 from connection              import get_connection
 from utils.exceptions        import ApiError
 from io                      import StringIO
+from urllib.parse            import quote
 
 
 class UserView:
@@ -157,7 +158,7 @@ class UserView:
             finally:
                 conn.close()
 
-        @app.route("/seller_info/download", methods=['POST'])
+        @app.route("/seller_info/download", methods=['GET'])
         def seller_info_list_download():
             conn = None
             output_stream = None
@@ -175,19 +176,28 @@ class UserView:
 
                 now_date = datetime.datetime.now().strftime("%Y%m%d")[2:]
 
+                file_name = f"seller_list_{now_date}.csv".format(now_date=now_date)
+                file_name = file_name.encode("utf-8")
+                url_encoded_file_name = quote(file_name)
+                
                 response = Response(
                     output_stream.getvalue(),
                     content_type="text/csv; charset=utf-8",
+                    # mimetype='text/csv'
+                    status=200
                 )
-                response.headers["Content-Disposition"] = "attachment; filename=seller_list_{now_date}.csv" \
-                    .format(now_date=now_date)
+
+                response.headers[
+                    "Content-Disposition"
+                ] = f"attachment; filename={url_encoded_file_name}; filename*=utf-8''{url_encoded_file_name}"\
+                    .format(url_encoded_file_name=url_encoded_file_name)
 
             except Exception as e:
                 return jsonify({'message': 'error {}'.format(e)}), 400
 
             else:
                 output_stream.close()
-                return response, 200
+                return response
 
             finally:
                 conn.close()
@@ -231,7 +241,7 @@ class UserView:
 
             try:
                 conn = get_connection()
-                seller_image = request.files
+                seller_image = dict(request.files)
                 user_service.upload_seller_image(seller_image, conn)
 
             except KeyError:

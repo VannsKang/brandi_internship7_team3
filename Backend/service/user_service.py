@@ -249,7 +249,22 @@ class UserService:
         return seller_info
 
     def upload_seller_image(self, seller_image, conn):
+        ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif']
 
         seller_profile = seller_image['seller_image']
-        self.s3.put_object(Body=seller_profile, Bucket='brandistorage', Key='upload_test_aws.png')
+        extension = seller_profile.filename.split('.')[-1]
+
+        if extension not in ALLOWED_EXTENSIONS:
+            raise Exception('지원하지 않는 이미지 형식입니다.')
+        seller_profile_image_name = 'test12345.' + extension
+        # print(seller_profile)
+        self.s3.upload_fileobj(
+            seller_profile,
+            'brandistorage',
+            seller_profile_image_name,
+            ExtraArgs={
+                "ContentType": "mimetype"
+            }
+        )
         return
+
