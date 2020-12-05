@@ -206,6 +206,7 @@ class UserView:
 
                 if request.method == 'PUT':
                     account_info = request.get_json()
+                    conn.commit()
                     seller = user_service.update_seller_info(account_info, conn)
 
             except KeyError:
@@ -219,6 +220,30 @@ class UserView:
 
             else:
                 return jsonify(seller), 200
+
+            finally:
+                conn.close()
+
+        @app.route("/upload/image", methods=['POST'])
+        def seller_image_upload():
+            conn = None
+
+            try:
+                conn = get_connection()
+                seller_image = request.files
+                user_service.upload_seller_image(seller_image, conn)
+
+            except KeyError:
+                return jsonify({'message': '이미지 업로드에 유효하지 않은 키 값 전송'}), 400
+
+            except TypeError:
+                return jsonify({'message': '업로드 할 파일이 없습니다.'}), 400
+
+            except Exception as e:
+                return jsonify({'message': 'error {}'.format(e)}), 400
+
+            else:
+                return jsonify({'message': 'SUCCESS'}), 200
 
             finally:
                 conn.close()
