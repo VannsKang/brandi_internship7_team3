@@ -2,10 +2,11 @@ import bcrypt
 import jwt
 import pandas as pd
 import numpy as np
+import boto3
 
 from config           import SECRET, ALGORITHM
 from utils.validate   import (password_validate,
-                            phone_number_validate)
+                              phone_number_validate)
 from utils.exceptions import (PasswordValidationError,
                               PhoneNumberValidationError,
                               ExistError,
@@ -16,7 +17,12 @@ from utils.exceptions import (PasswordValidationError,
 class UserService:
     def __init__(self, user_dao, config):
         self.user_dao = user_dao
-        self.config = config
+        self.config   = config
+        self.s3       = boto3.client(
+            's3',
+            aws_access_key_id     = config.AWS_ACCESS_KEY,
+            aws_secret_access_key = config.AWS_SECRET_ACCESS_KEY
+        )
 
     # 회원가입
     def sign_up_account(self, user_data, conn):
@@ -241,3 +247,25 @@ class UserService:
         }
 
         return seller_info
+
+    def upload_seller_image(self, seller_image, conn):
+        ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
+
+        seller_profile = seller_image['seller_image']
+        extension = seller_profile.filename.split('.')[-1]
+
+        if extension not in ALLOWED_EXTENSIONS:
+            raise Exception('지원하지 않는 이미지 형식입니다.')
+        
+        seller_profile_image_name = 'test123456.' + extension
+
+        self.s3.upload_fileobj(
+            seller_profile,
+            'brandistorage',
+            seller_profile_image_name,
+            ExtraArgs={
+                "ContentType": "mimetype"
+            }
+        )
+        return
+
