@@ -81,17 +81,31 @@
                 <td>셀러 계정</td>
                 <td>
                   <span>셀러 아이디</span>
-                    <a-button type="danger" class="btn-size">
-                        비밀번호 변경하기
+                    <a-button type="danger" class="btn-size" @click="passwordChangeShowModal">
+                      비밀번호 변경하기
                     </a-button>
+                    <a-modal v-model="visible" title="비밀번호 변경하기" on-ok="passwordChangeShowModalHandleOk">
+                      <template slot="footer">
+                        <a-button key="back" @click="passwordChangeShowModalHandleCancel">
+                          취소
+                        </a-button>
+                        <a-button key="submit" type="success" :loading="loading" @click="passwordChangeShowModalHandleOk">
+                          변경
+                        </a-button>
+                      </template>
+                      <p>변경할 비밀번호</p>
+                      <a-input class="margin-bottom-10" ref="userNameInput" v-model="userName" placeholder="변경할 비밀번호">
+                      </a-input>
+                      <br>
+                      <p>비밀번호 재입력</p>
+                      <a-input ref="userNameInput" v-model="userName" placeholder="한번 더 입력해주세요.">
+                      </a-input>
+                   </a-modal>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        
-        <!-- TODO content -->
-        <!-- html작성 -->
       </a-layout-content>
       <a-layout-content class="sellerInfo-content">
         <div class="sellerInfo-content-header">
@@ -238,9 +252,11 @@ export default {
 
   data() {
     return {
-      // state관리
       noImg,
       userName: '',
+      visible: false,
+      confirmLoading: false,
+      loading: false,
     };
   },
 
@@ -260,6 +276,19 @@ export default {
     },
     onChange(e) {
       console.log(`checked = ${e.target.checked}`);
+    },
+     passwordChangeShowModal() {
+      this.visible = true;
+    },
+    passwordChangeShowModalHandleOk(e) {
+      this.loading = true;
+      setTimeout(() => {
+        this.visible = false;
+        this.loading = false;
+      }, 3000);
+    },
+    passwordChangeShowModalHandleCancel(e) {
+      this.visible = false;
     },
   },
 };
@@ -394,6 +423,10 @@ export default {
 
 .margin-bottom-5 {
   margin-bottom: 5px;
+}
+
+.margin-bottom-10 {
+  margin-bottom: 10px;
 }
 
 .margin-float {
