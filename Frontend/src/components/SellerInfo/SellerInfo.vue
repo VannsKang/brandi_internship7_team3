@@ -20,7 +20,7 @@
                     <img :src="noImg" alt="noimage">
                   </div>
                   <div>
-                    <a-button>이미지 선택</a-button>
+                    <a-button @click="onClickImageUpload">이미지 선택</a-button>
                   </div>
                   <div class="padding-top-10">
                     <div class="sellerInfo-content-table-font-blue">
@@ -277,7 +277,7 @@ export default {
     onChange(e) {
       console.log(`checked = ${e.target.checked}`);
     },
-     passwordChangeShowModal() {
+    passwordChangeShowModal() {
       this.visible = true;
     },
     passwordChangeShowModalHandleOk(e) {
@@ -353,8 +353,8 @@ export default {
             } 
           }
         }
-        
       }
+
       img {
         width: 90px;
         height: 90px;
