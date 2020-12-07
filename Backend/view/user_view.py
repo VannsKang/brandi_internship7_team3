@@ -5,6 +5,7 @@ from flask_request_validator import Param, JSON, Pattern, validate_params
 from connection              import get_connection
 from utils.exceptions        import ApiError
 from io                      import StringIO
+from urllib.parse            import quote
 
 
 class UserView:
@@ -118,6 +119,7 @@ class UserView:
                 if request.method == 'PUT':
                     account_info = request.get_json()
                     user_service.update_seller_status(account_info, conn)
+                    conn.commit()
                     return jsonify({'message': 'SUCCESS'}), 200
 
             except KeyError:
@@ -174,19 +176,28 @@ class UserView:
 
                 now_date = datetime.datetime.now().strftime("%Y%m%d")[2:]
 
+                file_name = f"seller_list_{now_date}.csv".format(now_date=now_date)
+                file_name = file_name.encode("utf-8")
+                url_encoded_file_name = quote(file_name)
+
                 response = Response(
                     output_stream.getvalue(),
                     content_type="text/csv; charset=utf-8",
+                    mimetype='text/csv',
+                    status=200
                 )
-                response.headers["Content-Disposition"] = "attachment; filename=seller_list_{now_date}.csv" \
-                    .format(now_date=now_date)
+
+                response.headers[
+                    "Content-Disposition"
+                ] = f"attachment; filename={url_encoded_file_name}; filename*=utf-8''{url_encoded_file_name}"\
+                    .format(url_encoded_file_name=url_encoded_file_name)
 
             except Exception as e:
                 return jsonify({'message': 'error {}'.format(e)}), 400
 
             else:
                 output_stream.close()
-                return response, 200
+                return response
 
             finally:
                 conn.close()
@@ -196,29 +207,78 @@ class UserView:
         @app.route("/sellers/<int:seller_id>", methods=['GET', 'PUT'])
         def seller_detail(seller_id):
             conn = None
-            seller = None
 
             try:
                 conn = get_connection()
 
                 if request.method == 'GET':
                     seller = user_service.get_seller_info({'id': seller_id}, conn)
+                    return jsonify(seller), 200
 
                 if request.method == 'PUT':
-                    account_info = request.get_json()
-                    seller = user_service.update_seller_info(account_info, conn)
+                    seller_images = dict(request.files)
+                    seller_info = dict(request.form)
+                    seller_info['id'] = seller_id
+
+                    user_service.update_seller_info(seller_info, seller_images, conn)
+                    conn.commit()
+                    return jsonify({'message': 'SUCCESS'}), 200
 
             except KeyError:
+                conn.rollback()
                 return jsonify({'message': '셀러 속성 조회에 유효하지 않은 키 값 전송'}), 400
 
             except TypeError:
+                conn.rollback()
                 return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
 
             except Exception as e:
+                conn.rollback()
                 return jsonify({'message': 'error {}'.format(e)}), 400
-
-            else:
-                return jsonify(seller), 200
 
             finally:
                 conn.close()
+         
+        # NOTE soomyung API search seller result    
+        @app.route("/sellers/search", methods=["GET"])
+        def get_sellers(): 
+            conn = get_connection()
+            try:
+                filter_data = dict(request.args) 
+                filtered_sellers = user_service.get_filtered_sellers(filter_data, conn)
+                """request.args looks like
+                {
+                    user_id: blarblar
+                }
+                """
+            except KeyError:
+                return jsonify({'meassa'}), 400
+            else:
+                return jsonify(filtered_sellers), 200
+
+        # @app.route("/upload/image", methods=['PUT'])
+        # def seller_image_upload():
+        #     conn = None
+        #
+        #     try:
+        #         conn = get_connection()
+        #         seller_images = dict(request.files)
+        #         seller_info = dict(request.form)
+        #
+        #         user_service.update_seller_info(seller_info, seller_images, conn)
+        #
+        #     except KeyError:
+        #         return jsonify({'message': '이미지 업로드에 유효하지 않은 키 값 전송'}), 400
+        #
+        #     except TypeError:
+        #         return jsonify({'message': '업로드 할 파일이 없습니다.'}), 400
+        #
+        #     except Exception as e:
+        #         return jsonify({'message': '{}'.format(e)}), 400
+        #
+        #     else:
+        #         conn.commit()
+        #         return jsonify({'message': 'SUCCESS'}), 200
+        #
+        #     finally:
+        #         conn.close()

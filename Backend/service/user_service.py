@@ -2,10 +2,12 @@ import bcrypt
 import jwt
 import pandas as pd
 import numpy as np
+import boto3
+import uuid
 
 from config           import SECRET, ALGORITHM
 from utils.validate   import (password_validate,
-                            phone_number_validate)
+                              phone_number_validate)
 from utils.exceptions import (PasswordValidationError,
                               PhoneNumberValidationError,
                               ExistError,
@@ -16,7 +18,12 @@ from utils.exceptions import (PasswordValidationError,
 class UserService:
     def __init__(self, user_dao, config):
         self.user_dao = user_dao
-        self.config = config
+        self.config   = config
+        self.s3       = boto3.client(
+            's3',
+            aws_access_key_id     = config.AWS_ACCESS_KEY,
+            aws_secret_access_key = config.AWS_SECRET_ACCESS_KEY
+        )
 
     # 회원가입
     def sign_up_account(self, user_data, conn):
@@ -210,10 +217,6 @@ class UserService:
 
         return updated_seller
 
-    def update_seller_info(self, account_info, conn):
-
-        return
-
     def get_seller_info(self, account_info, conn):
         found_seller_info = self.user_dao.get_seller(account_info, conn)
 
@@ -241,3 +244,88 @@ class UserService:
         }
 
         return seller_info
+
+    def update_seller_info(self, seller_info, seller_image, conn):
+        allowed_extensions = ['jpg', 'jpeg', 'png']
+
+        seller_profile = seller_image['seller_profile_image']
+        seller_background = seller_image['seller_background_image']
+
+        profile_image_extension = seller_profile.filename.split('.')[-1]
+        background_image_extension = seller_background.filename.split('.')[-1]
+
+        if profile_image_extension not in allowed_extensions:
+            raise Exception('지원하지 않는 이미지 형식입니다. 셀러 프로필 이미지를 확인하세요.')
+
+        if background_image_extension not in allowed_extensions:
+            raise Exception('지원하지 않는 이미지 형식입니다. 셀러 배경 이미지를 확인하세요.')
+
+        # 현재 시간 불러오기 및 셀러 정보에 저장
+        now = self.user_dao.get_now_time(conn)
+        now = now['now']
+        seller_info['now'] = now
+
+        # 현재 유저 정보 가져오기
+        previous_seller_info = self.user_dao.get_seller(seller_info, conn)
+
+        # 업데이트 전 가장 최신의 셀러 정보에 현재 시간 저장
+        previous_seller_info['now'] = now
+
+        profile_image_uuid = str(uuid.uuid1())
+        background_image_uuid = str(uuid.uuid1())
+
+        seller_profile_image_url = f'seller/{now.year}' \
+                                   f'/{now.month}' \
+                                   f'/{now.day}' \
+                                   f'/{previous_seller_info["seller_id"]}_profile_{profile_image_uuid}' \
+                                   f'.{profile_image_extension}'
+
+        seller_background_image_url = f'seller/{now.year}' \
+                                      f'/{now.month}' \
+                                      f'/{now.day}' \
+                                      f'/{previous_seller_info["seller_id"]}_background_{background_image_uuid}' \
+                                      f'.{background_image_extension}'
+
+        self.s3.put_object(
+            Body=seller_profile,
+            Bucket='brandistorage',
+            Key=seller_profile_image_url,
+            ContentType="mimetype"
+        )
+
+        self.s3.put_object(
+            Body=seller_background,
+            Bucket='brandistorage',
+            Key=seller_background_image_url,
+            ContentType="mimetype"
+        )
+
+        # 셀러 이미지 및 배경이미지 경로 셀러 정보에 저장
+        s3_bucket_url = "https://brandistorage.s3.ap-northeast-2.amazonaws.com/"
+        seller_info['seller_profile'] = s3_bucket_url + seller_profile_image_url
+        seller_info['seller_background'] = s3_bucket_url + seller_background_image_url
+
+        seller_info = dict(previous_seller_info, **seller_info)
+
+        # 삭제된 셀러일 경우 에러 처리
+        if previous_seller_info['is_deleted']:
+            raise Exception("삭제된 셀러 입니다.")
+
+        # 수정하려는 셀러 정보 생성
+        self.user_dao.insert_seller_info(seller_info, conn)
+
+        # 이전 셀러 정보 이력 관리
+        updated_seller = self.user_dao.update_seller_info(previous_seller_info, conn)
+
+        return updated_seller
+    
+    # NOTE soomyung's API get seller data
+    def get_filtered_sellers(self, filter_data, conn):
+        
+        if "user_id" not in filter_data:
+            raise KeyError
+        filter_data['user_id'] = '%' + filter_data['user_id'] + '%'
+        print(filter_data['user_id'])
+        filtered_sellers =  self.user_dao.get_filtered_sellers(filter_data, conn)
+        
+        return filtered_sellers
