@@ -3,7 +3,7 @@
 .DS_Store
 .idea/
 config.py
-.vscode
+.vscode/
 ### Flask ###
 instance/*
 !instance/.gitignore

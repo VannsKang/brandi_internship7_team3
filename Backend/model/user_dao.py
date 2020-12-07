@@ -419,3 +419,25 @@ class UserDao:
                 raise Exception('이전 셀러 정보 이력 업데이트 실패')
 
             return cursor.fetchone()
+    
+    def get_filtered_sellers(self, filter_data, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+                SELECT 
+                    ac.user_id AS user_id,
+                    s.seller_profile AS seller_profile
+                FROM seller_info AS s
+                INNER JOIN accounts AS ac ON ac.account_id=s.account_id
+                WHERE end_date = '9999-12-31'
+                AND is_deleted = 0
+                AND ac.user_id LIKE %(user_id)s
+            """
+            
+            
+            # NOTE error handling, cursor <- data fetch
+            find_seller = cursor.execute(query, filter_data)
+            
+            if not find_seller:
+                raise Exception("검색 결과 없음")
+            
+            return cursor.fetchall()

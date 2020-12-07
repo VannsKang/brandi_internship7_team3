@@ -182,3 +182,16 @@ class UserService:
         seller_status = self.user_dao.update_seller_status(account_info, conn)
 
         return seller_status
+    
+    # NOTE soomyung's API get seller data
+    def get_filtered_sellers(self, filter_data, conn):
+        
+        if "user_id" not in filter_data:
+            raise KeyError
+        filter_data['user_id'] = '%' + filter_data['user_id'] + '%'
+        print(filter_data['user_id'])
+        filtered_sellers =  self.user_dao.get_filtered_sellers(filter_data, conn)
+        
+        return filtered_sellers
+        
+        
