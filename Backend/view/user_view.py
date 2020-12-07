@@ -234,6 +234,23 @@ class UserView:
 
             finally:
                 conn.close()
+         
+        # NOTE soomyung API search seller result    
+        @app.route("/sellers/search", methods=["GET"])
+        def get_sellers(): 
+            conn = get_connection()
+            try:
+                filter_data = dict(request.args) 
+                filtered_sellers = user_service.get_filtered_sellers(filter_data, conn)
+                """request.args looks like
+                {
+                    user_id: blarblar
+                }
+                """
+            except KeyError:
+                return jsonify({'meassa'}), 400
+            else:
+                return jsonify(filtered_sellers), 200
 
         @app.route("/upload/image", methods=['POST'])
         def seller_image_upload():
