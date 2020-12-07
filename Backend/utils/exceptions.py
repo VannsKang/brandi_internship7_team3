@@ -28,3 +28,18 @@ class NotMatchError(ApiError):
     pass
 
 
+class DeleteSellerError(ApiError):
+    pass
+
+
+class NotSupportImageFormat(ApiError):
+    pass
+
+
+class InvalidValueError(ApiError):
+    pass
+
+
+class UpdateFailError(ApiError):
+    pass
+
