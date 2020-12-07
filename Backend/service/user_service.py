@@ -3,6 +3,7 @@ import jwt
 import pandas as pd
 import numpy as np
 import boto3
+import uuid
 
 from config           import SECRET, ALGORITHM
 from utils.validate   import (password_validate,
@@ -216,10 +217,6 @@ class UserService:
 
         return updated_seller
 
-    def update_seller_info(self, account_info, conn):
-
-        return
-
     def get_seller_info(self, account_info, conn):
         found_seller_info = self.user_dao.get_seller(account_info, conn)
 
@@ -248,24 +245,78 @@ class UserService:
 
         return seller_info
 
-    def upload_seller_image(self, seller_image, conn):
-        ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png']
+    def update_seller_info(self, seller_info, seller_image, conn):
+        allowed_extensions = ['jpg', 'jpeg', 'png']
 
-        seller_profile = seller_image['seller_image']
-        extension = seller_profile.filename.split('.')[-1]
+        seller_profile = seller_image['seller_profile_image']
+        seller_background = seller_image['seller_background_image']
 
-        if extension not in ALLOWED_EXTENSIONS:
-            raise Exception('지원하지 않는 이미지 형식입니다.')
-        
-        seller_profile_image_name = 'test123456.' + extension
+        profile_image_extension = seller_profile.filename.split('.')[-1]
+        background_image_extension = seller_background.filename.split('.')[-1]
 
-        self.s3.upload_fileobj(
-            seller_profile,
-            'brandistorage',
-            seller_profile_image_name,
-            ExtraArgs={
-                "ContentType": "mimetype"
-            }
+        if profile_image_extension not in allowed_extensions:
+            raise Exception('지원하지 않는 이미지 형식입니다. 셀러 프로필 이미지를 확인하세요.')
+
+        if background_image_extension not in allowed_extensions:
+            raise Exception('지원하지 않는 이미지 형식입니다. 셀러 배경 이미지를 확인하세요.')
+
+        # 현재 시간 불러오기 및 셀러 정보에 저장
+        now = self.user_dao.get_now_time(conn)
+        now = now['now']
+        seller_info['now'] = now
+
+        # 현재 유저 정보 가져오기
+        previous_seller_info = self.user_dao.get_seller(seller_info, conn)
+
+        # 업데이트 전 가장 최신의 셀러 정보에 현재 시간 저장
+        previous_seller_info['now'] = now
+
+        profile_image_uuid = str(uuid.uuid1())
+        background_image_uuid = str(uuid.uuid1())
+
+        seller_profile_image_url = f'seller/{now.year}' \
+                                   f'/{now.month}' \
+                                   f'/{now.day}' \
+                                   f'/{previous_seller_info["seller_id"]}_profile_{profile_image_uuid}' \
+                                   f'.{profile_image_extension}'
+
+        seller_background_image_url = f'seller/{now.year}' \
+                                      f'/{now.month}' \
+                                      f'/{now.day}' \
+                                      f'/{previous_seller_info["seller_id"]}_background_{background_image_uuid}' \
+                                      f'.{background_image_extension}'
+
+        self.s3.put_object(
+            Body=seller_profile,
+            Bucket='brandistorage',
+            Key=seller_profile_image_url,
+            ContentType="mimetype"
         )
-        return
+
+        self.s3.put_object(
+            Body=seller_background,
+            Bucket='brandistorage',
+            Key=seller_background_image_url,
+            ContentType="mimetype"
+        )
+
+        # 셀러 이미지 및 배경이미지 경로 셀러 정보에 저장
+        s3_bucket_url = "https://brandistorage.s3.ap-northeast-2.amazonaws.com/"
+        seller_info['seller_profile'] = s3_bucket_url + seller_profile_image_url
+        seller_info['seller_background'] = s3_bucket_url + seller_background_image_url
+
+        seller_info = dict(previous_seller_info, **seller_info)
+
+        # 삭제된 셀러일 경우 에러 처리
+        if previous_seller_info['is_deleted']:
+            raise Exception("삭제된 셀러 입니다.")
+
+        # 수정하려는 셀러 정보 생성
+        self.user_dao.insert_seller_info(seller_info, conn)
+
+        # 이전 셀러 정보 이력 관리
+        updated_seller = self.user_dao.update_seller_info(previous_seller_info, conn)
+
+        return updated_seller
+
 
