@@ -158,7 +158,7 @@ class UserView:
             finally:
                 conn.close()
 
-        @app.route("/seller_info/download", methods=['GET'])
+        @app.route("/seller_info/download", methods=['POST'])
         def seller_info_list_download():
             conn = None
             output_stream = None
@@ -179,11 +179,11 @@ class UserView:
                 file_name = f"seller_list_{now_date}.csv".format(now_date=now_date)
                 file_name = file_name.encode("utf-8")
                 url_encoded_file_name = quote(file_name)
-                
+
                 response = Response(
                     output_stream.getvalue(),
                     content_type="text/csv; charset=utf-8",
-                    # mimetype='text/csv'
+                    mimetype='text/csv',
                     status=200
                 )
 
@@ -207,30 +207,34 @@ class UserView:
         @app.route("/sellers/<int:seller_id>", methods=['GET', 'PUT'])
         def seller_detail(seller_id):
             conn = None
-            seller = None
 
             try:
                 conn = get_connection()
 
                 if request.method == 'GET':
                     seller = user_service.get_seller_info({'id': seller_id}, conn)
+                    return jsonify(seller), 200
 
                 if request.method == 'PUT':
-                    account_info = request.get_json()
+                    seller_images = dict(request.files)
+                    seller_info = dict(request.form)
+                    seller_info['id'] = seller_id
+
+                    user_service.update_seller_info(seller_info, seller_images, conn)
                     conn.commit()
-                    seller = user_service.update_seller_info(account_info, conn)
+                    return jsonify({'message': 'SUCCESS'}), 200
 
             except KeyError:
+                conn.rollback()
                 return jsonify({'message': '셀러 속성 조회에 유효하지 않은 키 값 전송'}), 400
 
             except TypeError:
+                conn.rollback()
                 return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
 
             except Exception as e:
+                conn.rollback()
                 return jsonify({'message': 'error {}'.format(e)}), 400
-
-            else:
-                return jsonify(seller), 200
 
             finally:
                 conn.close()
@@ -252,27 +256,29 @@ class UserView:
             else:
                 return jsonify(filtered_sellers), 200
 
-        @app.route("/upload/image", methods=['POST'])
-        def seller_image_upload():
-            conn = None
-
-            try:
-                conn = get_connection()
-                seller_image = dict(request.files)
-                user_service.upload_seller_image(seller_image, conn)
-
-            except KeyError:
-                return jsonify({'message': '이미지 업로드에 유효하지 않은 키 값 전송'}), 400
-
-            except TypeError:
-                return jsonify({'message': '업로드 할 파일이 없습니다.'}), 400
-
-            except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 400
-
-            else:
-                conn.commit()
-                return jsonify({'message': 'SUCCESS'}), 200
-
-            finally:
-                conn.close()
+        # @app.route("/upload/image", methods=['PUT'])
+        # def seller_image_upload():
+        #     conn = None
+        #
+        #     try:
+        #         conn = get_connection()
+        #         seller_images = dict(request.files)
+        #         seller_info = dict(request.form)
+        #
+        #         user_service.update_seller_info(seller_info, seller_images, conn)
+        #
+        #     except KeyError:
+        #         return jsonify({'message': '이미지 업로드에 유효하지 않은 키 값 전송'}), 400
+        #
+        #     except TypeError:
+        #         return jsonify({'message': '업로드 할 파일이 없습니다.'}), 400
+        #
+        #     except Exception as e:
+        #         return jsonify({'message': '{}'.format(e)}), 400
+        #
+        #     else:
+        #         conn.commit()
+        #         return jsonify({'message': 'SUCCESS'}), 200
+        #
+        #     finally:
+        #         conn.close()
