@@ -1,9 +1,10 @@
 import datetime
 
-from flask                   import request, jsonify, Response
+from flask                   import request, jsonify, Response, g
 from flask_request_validator import Param, JSON, Pattern, validate_params
 from connection              import get_connection
 from utils.exceptions        import ApiError
+from utils.validate          import login_validate
 from io                      import StringIO
 from urllib.parse            import quote
 
@@ -48,7 +49,7 @@ class UserView:
                 return jsonify({'message': format(e.message)}), e.status_code
             except Exception as e:
                 conn.rollback()
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
             finally:
                 conn.close()
 
@@ -79,15 +80,14 @@ class UserView:
 
         # 마스터가 셀러 리스트를 보는 페이지
         @app.route("/master/seller_list", methods=['POST'])
-        # decorator master
+        @login_validate
         def seller_info_list():
             conn = None
 
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
-
-                data = user_service.get_seller_list(filter_data, conn)
+                data = user_service.get_seller_list(g.user_id, filter_data, conn)
 
             except KeyError:
                 return jsonify({'message': '셀러 정보 조회에 유효하지 않은 키 값 전송'}), 400

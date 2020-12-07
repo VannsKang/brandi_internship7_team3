@@ -74,6 +74,7 @@ class UserDao:
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
             sql = """
                 SELECT
+                    accounts.account_id AS account_id,
                     accounts.user_id,
                     seller_info.password
                 FROM
@@ -465,3 +466,20 @@ class UserDao:
             
             return cursor.fetchall()
           
+    def get_account_info(self, account_info, conn):
+        with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+            query = """
+                SELECT 
+                    account_id AS account_id,
+                    user_id AS user_id,
+                    class_id AS class_id
+                FROM accounts
+                WHERE account_id = %(id)s
+            """
+
+            account_info = cursor.execute(query, account_info)
+
+            if not account_info:
+                raise NotExistError('account Data 없음', 400)
+
+            return cursor.fetchone()
