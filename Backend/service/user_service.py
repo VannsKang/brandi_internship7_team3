@@ -12,7 +12,10 @@ from utils.exceptions import (PasswordValidationError,
                               PhoneNumberValidationError,
                               ExistError,
                               NotExistError,
-                              NotMatchError)
+                              NotMatchError,
+                              DeleteSellerError,
+                              NotSupportImageFormat
+                              )
 
 
 class UserService:
@@ -201,7 +204,7 @@ class UserService:
         previous_seller_info['now'] = now['now']
 
         if previous_seller_info['is_deleted']:
-            raise Exception("삭제된 셀러 입니다.")
+            raise DeleteSellerError('삭제된 셀러 입니다.', 400)
 
         seller_status = self.user_dao.get_seller_action_to_status(account_info, conn)
 
@@ -255,10 +258,10 @@ class UserService:
         background_image_extension = seller_background.filename.split('.')[-1]
 
         if profile_image_extension not in allowed_extensions:
-            raise Exception('지원하지 않는 이미지 형식입니다. 셀러 프로필 이미지를 확인하세요.')
+            raise NotSupportImageFormat('지원하지 않는 이미지 형식입니다. 셀러 프로필 이미지를 확인하세요.', 400)
 
         if background_image_extension not in allowed_extensions:
-            raise Exception('지원하지 않는 이미지 형식입니다. 셀러 배경 이미지를 확인하세요.')
+            raise NotSupportImageFormat('지원하지 않는 이미지 형식입니다. 셀러 배경 이미지를 확인하세요.', 400)
 
         # 현재 시간 불러오기 및 셀러 정보에 저장
         now = self.user_dao.get_now_time(conn)
@@ -309,7 +312,7 @@ class UserService:
 
         # 삭제된 셀러일 경우 에러 처리
         if previous_seller_info['is_deleted']:
-            raise Exception("삭제된 셀러 입니다.")
+            raise DeleteSellerError('삭제된 셀러 입니다.', 400)
 
         # 수정하려는 셀러 정보 생성
         self.user_dao.insert_seller_info(seller_info, conn)
