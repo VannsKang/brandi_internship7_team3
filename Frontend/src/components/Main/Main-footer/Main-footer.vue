@@ -1,35 +1,34 @@
 <template>
   <section class="main-footer">
     <div>
-      <span>
-        | 상호 : (주)브랜디 | 주소 : (06223) 서울특별시 강남구 테헤란로 32길 26
-        청송빌딩 | 사업자등록번호 : 220-88-93187 | 통신판매업신고 :
-        2016-서울강남-00359호 | 이메일 : help@brandi.co.kr
-      </span>
-      <span>2020 © brandi inc.</span>
+      <span> {{ footer_text }}{{ email }} </span>
+      <span>{{ copyright }}</span>
     </div>
   </section>
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "Main-footer",
+
+  mounted() {
+    this.updateFooterAction();
+  },
+
+  computed: {
+    ...mapState({
+      footer_text: ({ navmenus }) => navmenus.footer_text,
+      copyright: ({ navmenus }) => navmenus.copyright,
+      email: ({ navmenus }) => navmenus.email,
+    }),
+  },
+
+  methods: {
+    ...mapActions("navmenus", ["updateFooterAction"]),
+  },
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../../styles/mixin.scss";
-
-.main-footer {
-  /* position: absolute; */
-  /* bottom: 0; */
-  width: 100%;
-  background: $nav-side-color;
-  padding: 10px 20px 5px;
-  font-size: 12px;
-  color: #999ba2;
-  div {
-    @include flexSet("center", "flex-start", "column");
-  }
-}
-</style>
+<style src="./Main-footer.scss" lang="scss" scoped />

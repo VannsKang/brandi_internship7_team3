@@ -1,0 +1,47 @@
+@import "../../../styles/mixin.scss";
+
+.main-side {
+  background: $nav-side-color;
+
+  > div {
+    > header {
+      height: 53px;
+      padding: 0;
+      background: $nav-side-color;
+
+      > div {
+        height: 100%;
+        @include flexSet("flex-end", "center");
+
+        > i {
+          width: 23px;
+          height: 23px;
+          background: rgb(240, 242, 245);
+          font-size: 12px;
+          border-top-left-radius: 5px;
+          border-bottom-left-radius: 5px;
+          @include flexSet("center", "center");
+        }
+      }
+    }
+
+    > ul {
+      width: 100%;
+      background: $nav-side-color;
+      color: #fff;
+      border: 0;
+
+      > li {
+        margin: 0 !important;
+        border-bottom: 1px solid #444;
+        &:hover {
+          background: $primary-color;
+        }
+
+        > ul {
+          background: $nav-side-color;
+        }
+      }
+    }
+  }
+}

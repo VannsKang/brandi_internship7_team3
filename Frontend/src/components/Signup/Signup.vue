@@ -1,7 +1,7 @@
 <template>
   <div class="signup">
     <section class="signup-main">
-      <a-form :form="form" @submit.prevent="handleSubmit">
+      <a-form :form="form" @submit.prevent="submitSignup">
         <login-logo />
         <div class="signup-title" align="center">
           <h3>셀러회원 가입</h3>
@@ -12,91 +12,8 @@
           </div>
         </div>
 
-        <!-- SECTION signup -->
         <div class="signup-form">
-          <div>
-            <div class="signup-form-title">
-              가입 정보
-            </div>
-            <a-form-item>
-              <a-input
-                v-decorator="[
-                  'user_id',
-                  {
-                    rules: [
-                      { required: true, message: '필수 입력항목입니다.' },
-                      { min: 5, message: '아이디의 최소 길이는 5글자입니다.' },
-                      {
-                        pattern: /^([A-Za-z0-9])([A-Za-z0-9_-]){4,19}$/,
-                        message:
-                          '아이디는 5~20글자의 영문, 숫자, 언더바, 하이픈만 사용 가능하며 시작 문자는 영문 또는 숫자입니다.',
-                      },
-                    ],
-                  },
-                ]"
-                placeholder="아이디"
-              >
-                <a-icon
-                  slot="prefix"
-                  type="user"
-                  style="color: rgba(0,0,0,.25)"
-                />
-              </a-input>
-            </a-form-item>
-            <a-form-item has-feedback>
-              <a-input
-                v-decorator="[
-                  'password',
-                  {
-                    rules: [
-                      {
-                        validator: validateToNextPassword,
-                      },
-                      {
-                        pattern: /^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[~!@#$%^&*()\-_=+,.<>/?;:[{}\]\\|]).{8,20}$/,
-                        message:
-                          '비밀번호는 8~20글자의 영문대소문자, 숫자, 특수문자를 조합해야 합니다.',
-                      },
-                    ],
-                  },
-                ]"
-                type="password"
-                placeholder="비밀번호"
-                autocomplete
-              >
-                <a-icon
-                  slot="prefix"
-                  type="lock"
-                  style="color: rgba(0,0,0,.25)"
-                />
-              </a-input>
-            </a-form-item>
-            <a-form-item has-feedback>
-              <a-input
-                v-decorator="[
-                  'confirm_password',
-                  {
-                    rules: [
-                      {
-                        validator: compareToFirstPassword,
-                        message: '비밀번호가 일치하지 않습니다.',
-                      },
-                    ],
-                  },
-                ]"
-                type="password"
-                placeholder="비밀번호 재입력"
-                autocomplete
-                @blur="handleConfirmBlur"
-              >
-                <a-icon
-                  slot="prefix"
-                  type="check"
-                  style="color: rgba(0,0,0,.25)"
-                />
-              </a-input>
-            </a-form-item>
-          </div>
+          <signup-basic :form="form" />
 
           <signup-owner />
 
@@ -106,10 +23,8 @@
             <a-button type="primary" html-type="submit">
               신청
             </a-button>
-            <a-button type="danger">
-              <router-link to="/" exact>
-                취소
-              </router-link>
+            <a-button type="danger" @click="cancelSignup">
+              취소
             </a-button>
           </a-form-item>
         </div>
@@ -121,159 +36,128 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
+// LINK components
 import loginFooter from "../components/Login-footer/Login-footer";
 import loginLogo from "../components/Login-logo/Login-logo";
+import SignupBasic from "./Signup-basic/Signup-basic.vue";
 import SignupOwner from "./Signup-owner/Signup-owner.vue";
 import SignupSeller from "./Signup-seller/Signup-seller";
+
+// LINK API
 import { SIGNUP_API } from "../../config";
 
 export default {
   components: {
     "login-footer": loginFooter,
     "login-logo": loginLogo,
+    "signup-basic": SignupBasic,
     "signup-owner": SignupOwner,
     "signup-seller": SignupSeller,
   },
 
   data() {
-    return {
-      confirmDirty: false,
-    };
+    return {};
   },
 
-  // SECTION lifecycle
+  computed: {
+    ...mapState({
+      user_token: ({ users }) => users.user_token,
+    }),
+  },
+
+  // // SECTION lifecycle
   beforeCreate() {
     this.form = this.$form.createForm(this, { name: "Signup" });
   },
 
+  mounted() {
+    this.user_token && this.$router.push("/main/seller");
+  },
+
   methods: {
-    handleSubmit() {
+    submitSignup() {
       this.form.validateFieldsAndScroll(async (err, values) => {
-        // REVIEW for data check
-        // !err && console.log("Received values of form: ", values);
+        if (err)
+          return this.$alert.fire({
+            title: "잘못된 가입입니다!",
+            timer: 1000,
+            icon: "error",
+            showConfirmButton: false,
+          });
         try {
+          // ANCHOR mockdata
+          // const response = await this.$http.get(SIGNUP_API);
+
+          // ANCHOR backend
           const response = await this.$http.post(SIGNUP_API, values);
           const validation = response && response.status === 200;
           !validation && new Error("cannot fetch the data");
           const { message } = response.data;
           console.log(message, values);
-          message === "SUCCESS" && this.$router.push(`/`);
+          if (message === "SUCCESS") {
+            this.$alert.fire({
+              title: "회원 가입 완료",
+              timer: 1000,
+              icon: "success",
+              showConfirmButton: false,
+            });
+            this.$router.push(`/`);
+          }
         } catch (error) {
           console.log("!!error fetch data!!");
+          this.$alert.fire({
+            title: "이미 가입된 사용자입니다.",
+            timer: 1000,
+            icon: "error",
+            showConfirmButton: false,
+          });
         }
       });
     },
 
-    handleConfirmBlur(e) {
-      const { value } = e.target;
-      this.confirmDirty = this.confirmDirty || !!value;
-    },
+    async cancelSignup() {
+      const swalWithBootstrapButtons = this.$alert.mixin({
+        customClass: {
+          confirmButton: "ant-btn ant-btn-primary",
+          cancelButton: "ant-btn ant-btn-danger",
+        },
+        buttonsStyling: false,
+      });
 
-    validateToNextPassword(rule, value, callback) {
-      const { form } = this;
-      value &&
-        this.confirmDirty &&
-        form.validateFields(["confirm"], { force: true });
-      callback();
-    },
+      const firstAlert = await this.$alert.fire({
+        title: "회원가입",
+        text: "브랜디 가입을 취소하시겠습니까?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "예",
+        cancelButtonText: "아니오",
+        reverseButtons: true,
+      });
 
-    compareToFirstPassword(rule, value, callback) {
-      const { form } = this;
-      value && value !== form.getFieldValue("password")
-        ? callback("not matched!")
-        : callback();
+      if (firstAlert.isConfirmed) {
+        swalWithBootstrapButtons.fire({
+          title: "회원 가입 취소 완료",
+          text: "회원 가입이 취소되었습니다",
+          icon: "success",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        this.$router.push("/");
+      }
+
+      if (firstAlert.dismiss === this.$alert.DismissReason.cancel)
+        return swalWithBootstrapButtons.fire({
+          title: "회원 가입",
+          text: "브랜디 가입을 진행해주세요",
+          icon: "info",
+          timer: 1000,
+          showConfirmButton: false,
+        });
     },
   },
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../styles/mixin.scss";
-
-.signup {
-  position: absolute;
-  background: $background-color;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  @include flexSet("space-between", "center", "column");
-
-  &-main {
-    background: #fff;
-    width: 500px;
-    margin: 0 auto;
-    padding: 20px 30px 15px;
-    border-radius: 4px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    > form {
-      width: 100%;
-    }
-  }
-
-  &-title h3 {
-    font-size: 24px;
-    margin-bottom: 15px;
-  }
-
-  &-subtitle {
-    border-top: 1px solid #ddd;
-    width: 100%;
-    padding-top: 20px;
-    margin-bottom: 20px;
-    @include flexSet("center", "center");
-
-    > div {
-      width: 408px;
-      height: 45px;
-      background: $primary-color;
-      color: #ddd;
-      font-size: 20px;
-      font-weight: 500;
-      @include flexSet("center", "center");
-    }
-  }
-
-  &-form {
-    width: 408px;
-    margin: 0 auto;
-
-    > div {
-      margin-bottom: 35px;
-    }
-
-    .ant-form {
-      &-item {
-        margin-bottom: 8px;
-      }
-    }
-
-    &-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 5px;
-    }
-
-    &-button {
-      margin-top: 40px;
-      @include flexSet("center", "center");
-      button {
-        padding: 0 10px;
-        &:first-child {
-          border-top-right-radius: 0;
-          border-bottom-right-radius: 0;
-          background: $confirm-color;
-        }
-
-        &:last-child {
-          border-top-left-radius: 0;
-          border-bottom-left-radius: 0;
-          margin-left: -1px;
-          background: $reject-color;
-        }
-      }
-    }
-  }
-}
-</style>
+<style src="./Signup.scss" lang="scss" scoped />

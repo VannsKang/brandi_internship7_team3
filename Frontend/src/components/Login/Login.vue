@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 // LINK components
 import loginLogo from "../components/Login-logo/Login-logo";
@@ -93,32 +93,57 @@ export default {
     return {};
   },
 
-  computed: {},
+  computed: {
+    ...mapState({
+      user_token: ({ users }) => users.user_token,
+    }),
+  },
 
   beforeCreate() {
-    this.form = this.$form.createForm(this, { name: "normal_login" });
+    this.form = this.$form.createForm(this, { name: "Login" });
+  },
+
+  mounted() {
+    this.user_token && this.$router.push("/main/seller");
   },
 
   methods: {
-    handleSubmit(e) {
+    handleSubmit() {
       this.form.validateFields(async (err, values) => {
-        // NOTE mockdata
-        // !err && console.log("Received values of form: ", values);
-        // if (!err) {
-        //   const token = "thisismocktoken";
-        //   console.log(token);
-        //   this.getTokenAction({ token: token, user_id: values.user_id });
-        //   this.$router.push("/main/seller");
-        // }
+        if (err)
+          return this.$alert.fire({
+            title: "잘못된 로그인 시도입니다!",
+            timer: 2000,
+            icon: "error",
+            showConfirmButton: false,
+          });
         try {
+          // NOTE mockdata
+          // const response = await this.$http.get(SIGNIN_API);
+
+          // NOTE backend
           const response = await this.$http.post(SIGNIN_API, values);
           const validation = response && response.status === 200;
           !validation && new Error("cannot fetch the data");
           const { message, token } = response.data;
           console.log(message, values.user_id);
           this.getTokenAction({ token: token, user_id: values.user_id });
-          message === "SUCCESS!" && this.$router.push("/main/seller");
+          if (message === "SUCCESS!") {
+            this.$alert.fire({
+              title: "로그인 성공!",
+              timer: 2000,
+              icon: "success",
+              showConfirmButton: false,
+            });
+            this.$router.push("/main/seller");
+          }
         } catch (error) {
+          this.$alert.fire({
+            title: "잘못된 로그인 시도입니다!",
+            timer: 2000,
+            icon: "error",
+            showConfirmButton: false,
+          });
           console.log("!!error fetch data!!");
         }
       });
@@ -129,81 +154,4 @@ export default {
 };
 </script>
 
-<style lang="scss">
-@import "../../styles/mixin.scss";
-
-.login {
-  text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background: $background-color;
-
-  main {
-    @include flexSet("center", "center", column);
-    margin: auto;
-    padding: 65px 0 50px;
-
-    .login-template {
-      width: 380px;
-      padding: 64px 30px 0 30px;
-      background: #fff;
-      border-radius: 20px;
-      box-shadow: 0 4px 31px 0 rgba(0, 0, 0, 0.1);
-
-      form {
-        .form-title {
-          margin-bottom: 25px;
-          font-weight: 700;
-          font-size: 24px;
-          text-align: left;
-          line-height: 1.5;
-          text-indent: 2px;
-          letter-spacing: -1.5px;
-        }
-
-        .input-field {
-          margin-bottom: 10px;
-
-          .input-item {
-            height: 46px;
-            padding: 13px 16px;
-            border-radius: 8px;
-            line-height: 1.5;
-            font-weight: 500;
-
-            &::placeholder {
-              color: #999;
-              font-size: 12px;
-            }
-          }
-
-          .ant-form-explain {
-            text-align: left;
-            margin-top: 5px;
-            font-size: 12px;
-            color: #000;
-            font-weight: 700;
-          }
-        }
-
-        .confirm-btn {
-          width: 100%;
-          height: 45px;
-          margin-top: 10px;
-          background: #000;
-          border: #000;
-          border-radius: 8px;
-        }
-
-        .signin-desc {
-          font-size: 12px;
-          color: #999;
-        }
-      }
-    }
-  }
-}
-</style>
+<style src="./Login.scss" lang="scss" />
