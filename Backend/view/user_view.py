@@ -73,7 +73,7 @@ class UserView:
             except ApiError as e:
                 return jsonify({'message': format(e.message)}), e.status_code
             except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
             finally:
                 conn.close()
 
@@ -95,8 +95,11 @@ class UserView:
             except TypeError:
                 return jsonify({'message': '셀러 정보 조회에 비어있는 값 전송'}), 400
 
+            except ApiError as e:
+                return jsonify({'message': format(e.message)}), e.status_code
+
             except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
 
             else:
                 return jsonify(data), 200
@@ -128,8 +131,11 @@ class UserView:
             except TypeError:
                 return jsonify({'message': '셀러 상태 조회에 비어있는 값 전송'}), 400
 
+            except ApiError as e:
+                return jsonify({'message': format(e.message)}), e.status_code
+
             except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
 
             finally:
                 conn.close()
@@ -149,8 +155,11 @@ class UserView:
             except TypeError:
                 return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
 
+            except ApiError as e:
+                return jsonify({'message': format(e.message)}), e.status_code
+
             except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
 
             else:
                 return jsonify(seller_attributes), 200
@@ -192,8 +201,11 @@ class UserView:
                 ] = f"attachment; filename={url_encoded_file_name}; filename*=utf-8''{url_encoded_file_name}"\
                     .format(url_encoded_file_name=url_encoded_file_name)
 
+            except ApiError as e:
+                return jsonify({'message': format(e.message)}), e.status_code
+
             except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
 
             else:
                 output_stream.close()
@@ -232,36 +244,11 @@ class UserView:
                 conn.rollback()
                 return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
 
+            except ApiError as e:
+                return jsonify({'message': format(e.message)}), e.status_code
+
             except Exception as e:
-                conn.rollback()
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
 
             finally:
                 conn.close()
-
-        # @app.route("/upload/image", methods=['PUT'])
-        # def seller_image_upload():
-        #     conn = None
-        #
-        #     try:
-        #         conn = get_connection()
-        #         seller_images = dict(request.files)
-        #         seller_info = dict(request.form)
-        #
-        #         user_service.update_seller_info(seller_info, seller_images, conn)
-        #
-        #     except KeyError:
-        #         return jsonify({'message': '이미지 업로드에 유효하지 않은 키 값 전송'}), 400
-        #
-        #     except TypeError:
-        #         return jsonify({'message': '업로드 할 파일이 없습니다.'}), 400
-        #
-        #     except Exception as e:
-        #         return jsonify({'message': '{}'.format(e)}), 400
-        #
-        #     else:
-        #         conn.commit()
-        #         return jsonify({'message': 'SUCCESS'}), 200
-        #
-        #     finally:
-        #         conn.close()

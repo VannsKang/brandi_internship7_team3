@@ -1,6 +1,10 @@
 import pymysql
 import datetime
-from utils.exceptions import InsertFailError
+from utils.exceptions import (InsertFailError,
+                              NotExistError,
+                              InvalidValueError,
+                              UpdateFailError
+                              )
 
 
 class UserDao:
@@ -174,7 +178,7 @@ class UserDao:
             sellers = cursor.execute(query, filter_data)
 
             if not sellers:
-                raise Exception("seller Data 없음")
+                raise NotExistError('seller Data 없음', 400)
 
             return cursor.fetchall()
 
@@ -250,7 +254,7 @@ class UserDao:
             seller_count = cursor.execute(query, filter_data)
 
             if not seller_count:
-                raise Exception("seller Data 없음")
+                raise NotExistError('seller Data 없음', 400)
 
             return cursor.fetchone()
 
@@ -267,7 +271,7 @@ class UserDao:
             seller_status = cursor.execute(query)
 
             if not seller_status:
-                raise Exception("seller status Data 없음")
+                raise NotExistError('seller status Data 없음', 400)
 
             return cursor.fetchall()
 
@@ -284,7 +288,7 @@ class UserDao:
             seller_attributes = cursor.execute(query)
 
             if not seller_attributes:
-                raise Exception("seller attributes Data 없음")
+                raise NotExistError('seller attributes Data 없음', 400)
 
             return cursor.fetchall()
 
@@ -302,7 +306,7 @@ class UserDao:
             seller_status = cursor.execute(query, account_info)
 
             if not seller_status:
-                raise Exception("유효하지 않은 액션 값 전송")
+                raise InvalidValueError('유효하지 않은 액션 값 전송', 400)
             return cursor.fetchone()
 
     # noinspection PyMethodMayBeStatic
@@ -354,7 +358,7 @@ class UserDao:
             seller_info = cursor.execute(query, seller_info)
 
             if not seller_info:
-                raise Exception("seller Data 없음")
+                raise NotExistError('seller Data 없음', 400)
 
             return cursor.fetchone()
 
@@ -419,7 +423,7 @@ class UserDao:
             insert_seller_info_check = cursor.execute(query, seller_info)
 
             if not insert_seller_info_check:
-                raise Exception('셀러 상태 정보 갱신 실패')
+                raise InsertFailError('셀러 상태 정보 갱신 실패', 400)
 
             return insert_seller_info_check
 
@@ -435,6 +439,6 @@ class UserDao:
             update_seller_info = cursor.execute(query, seller_info)
 
             if not update_seller_info:
-                raise Exception('이전 셀러 정보 이력 업데이트 실패')
+                raise UpdateFailError('이전 셀러 정보 이력 업데이트 실패', 400)
 
             return update_seller_info
