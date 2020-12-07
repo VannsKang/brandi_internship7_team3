@@ -14,7 +14,8 @@ from utils.exceptions import (PasswordValidationError,
                               NotExistError,
                               NotMatchError,
                               DeleteSellerError,
-                              NotSupportImageFormat
+                              NotSupportImageFormat,
+                              InvalidUserError
                               )
 
 
@@ -64,13 +65,22 @@ class UserService:
             raise NotExistError('탈퇴한 회원입니다.', 400)
         # 유저 정보가 존재한다면 저장된 비밀번호와 비교 후 로그인, 토큰 전달
         elif bcrypt.checkpw(user_data.get('password').encode('utf-8'), get_seller_info.get('password').encode('utf-8')):
-            access_token = jwt.encode({'id': get_seller_info['user_id']}, SECRET['secret'], ALGORITHM['algorithm'])
+            access_token = jwt.encode({'id': get_seller_info['account_id']}, SECRET['secret'], ALGORITHM['algorithm'])
             decoded_token = access_token.decode('utf-8')
             return {'message': 'SUCCESS!', 'token': decoded_token}, 200
         else:
             raise NotMatchError('아이디와 비밀번호를 다시 확인해주세요.', 400)
 
-    def get_seller_list(self, filter_data, conn):
+    def get_seller_list(self, account_id, filter_data, conn):
+        account_info = {
+            'id': account_id
+        }
+
+        account = self.user_dao.get_account_info(account_info, conn)
+
+        if account['class_id'] == 2:
+            raise InvalidUserError('권한이 없는 사용자입니다.', 403)
+
         seller_list = self.user_dao.get_seller_list(filter_data, conn)
 
         columns = [
