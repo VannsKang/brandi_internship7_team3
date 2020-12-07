@@ -116,90 +116,45 @@
     <div class ="table">
       <span>전체 조회건 수 :  건</span>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>
-            <div>
-              <a-checkbox
-                :indeterminate="indeterminate"
-                :checked="checkAll"
-                @change="onCheckAllChange"
-              />
-            </div>
-          </th>
-          <th v-for="column in columns" :key="column.dataIndex">
-            <div>
-              {{ column.title }}
-            </div>
-          </th>
-          <td>
-            <div>
-              <a-select
-                :default-value="select_value"
-                style="width: 80px"
-                @change="searchSellerDropdown"
-              >
-                <a-select-option
-                  v-for="stat in seller_status"
-                  :key="stat.name"
-                  name="seller_status"
-                  :value="stat.seller_status_id"
-                >
-                  {{ stat.name }}
-                </a-select-option>
-              </a-select>
-            </div>
-          </td>
-          <th scope="col">등록일</th>
-          <th scope="col">대표이미지</th>
-          <th scope="col">상품명</th>
-          <th scope="col">상품코드</th>
-          <th scope="col">상품번호</th>
-          <th scope="col">셀러속성</th>
-          <th scope="col">셀러명</th>
-          <th scope="col">판매가</th>
-          <th scope="col">할인가</th>
-          <th scope="col">판매여부</th>
-          <th scope="col">진열여부</th>
-          <th scope="col">할인여부</th>
-          <th scope="col">구매하기</th>
-          <th scope="col" v-if="sheetStatus != 'WAIT'">응답상태</th>
-          <th v-for="(question, index) in sheetQuestions" :key="index" scope="col">{{ question }}</th>
-          <th scope="col" v-if="sheetStatus != 'WAIT'">응답날짜</th>
-          <th scope="col" v-if="sheetStatus != 'WAIT'">수정날짜</th>
-          <th scope="col" v-if="sheetStatus == 'PROCEEDING'">응답 수정</th>
-          <th scope="col" v-if="sheetStatus == 'PROCEEDING'">메일 전송</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(line, index) in responseData" :key="index">
-          <th scope="row">{{ index + 1 }}</th>
-          <td>{{ line.name }}</td>
-          <td>{{ line.position }}</td>
-          <td>{{ line.teamName }}</td>
-          <td v-if="sheetStatus != 'WAIT'">
-            <span v-if="line.requestStatus == 'YES'" style=""><span class="dot dot-yes"></span></span>
-            <span v-else>
-              <div v-if="sheetStatus == 'PROCEEDING'" class="spinner-border spinner-border-sm text-danger" role="status">
-                <span class="sr-only">Loading...</span>
-              </div>
-              <div v-else>
-                <span class="dot dot-no"></span>
-              </div>
-            </span>
-          </td>
-          <td v-for="(text, index2) in line.response" :key="index2">{{ text }}</td>
-          <td v-if="sheetStatus != 'WAIT'">{{ line.responseDate != null ? line.responseDate.split('T').join('  ') : '' }}</td>
-          <td v-if="sheetStatus != 'WAIT'">{{ line.modifiedDate != null ? line.modifiedDate.split('T').join('  ') : '' }}</td>
-          <td v-if="sheetStatus == 'PROCEEDING'"><Button class="btn btn-info">Edit</Button></td>
-          <td v-if="sheetStatus == 'PROCEEDING'">
-            <Button v-if="line.requestStatus == 'YES'" class="btn btn-warning">수정 요청</Button>
-            <Button v-if="line.requestStatus == 'NO'" class="btn btn-warning">재전송</Button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div>
+      <table id="product-list">
+        <thead>
+          <tr class="heading">
+            <th>...</th>
+            <th width="90">등록일</th>
+            <th>대표이미지</th>
+            <th>상품명</th>
+            <th>상품코드</th>
+            <th>상품번호</th>
+            <th>셀러속성</th>
+            <th>셀러명</th>
+            <th>판매가</th>
+            <th>할인가</th>
+            <th>판매여부</th>
+            <th>진열여부</th>
+            <th>할인여부</th>
+            <th>구매하기</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in rows">
+            <td>{{row.index}}</td>
+            <td>{{row.created_at}}</td>
+            <td>{{row.thumbnail}}</td>
+            <td>{{row.product_name}}</td>
+            <td>{{row.product_code}}</td>
+            <td>{{row.product_number}}</td>
+            <td>{{row.seller_attribute_id}}</td>
+            <td>{{row.seller_name}}</td>
+            <td>{{row.discount}}</td>
+            <td>{{row.sell_info}}</td>
+            <td>{{row.show_info}}</td>
+            <td>{{row.discount_info}}</td>
+            <td>{{row.buy}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -228,7 +183,7 @@ export default {
 }
 
 .products-filter {
-    width:1132px;
+    width: 1200px;
     font-weight: 500;
     border: 3px #ccc solid;
     padding: 10px 25px 25px;
@@ -414,7 +369,7 @@ button:hover {
 
 .select-pagenation select {
   position: absolute;
-  right:90px;
+  right:20px;
   height: 30px;
   border: 1px solid #ccc;
   padding-bottom: 10px;
@@ -426,7 +381,7 @@ button:hover {
 
 .product-excel {
   position: absolute;
-  right:58px;
+  right:20px;
 }
 
 .product-excel button {
@@ -467,6 +422,33 @@ button.apply {
   margin-top:50px;
   font-size: 13px;
   font-weight: normal;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: white;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+table th {
+  text-align: left;
+  color: black;
+  padding: 8px;
+  border: 1px solid #ccc;
+}
+
+// table td {
+//   text-align: left;
+//   border: 1px solid #ccc;
+// }
+
+table tr:first-child td {
+background-color: #e2e1e1;
 }
 
 </style>
