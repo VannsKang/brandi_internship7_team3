@@ -134,7 +134,6 @@ class UserView:
             finally:
                 conn.close()
 
-        # 셀러 상태
         @app.route("/update/seller_status", methods=['PUT'])
         @login_validate
         def update_seller_status():
@@ -148,11 +147,11 @@ class UserView:
 
             except KeyError:
                 conn.rollback()
-                return jsonify({'message': '셀러 상태 조회에 유효하지 않은 키 값 전송'}), 400
+                return jsonify({'message': '액션에 따른 셀러 상태 변경에 유효하지 않은 키 값 전송'}), 400
 
             except TypeError:
                 conn.rollback()
-                return jsonify({'message': '셀러 상태 조회에 비어있는 값 전송'}), 400
+                return jsonify({'message': '액션에 따른 셀러 상태 변경에 비어있는 값 전송'}), 400
 
             except ApiError as e:
                 conn.rollback()
@@ -267,11 +266,11 @@ class UserView:
 
             except KeyError:
                 conn.rollback()
-                return jsonify({'message': '셀러 속성 조회에 유효하지 않은 키 값 전송'}), 400
+                return jsonify({'message': '셀러 정보 조회에 유효하지 않은 키 값 전송'}), 400
 
             except TypeError:
                 conn.rollback()
-                return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
+                return jsonify({'message': '셀러 정보 조회에 비어있는 값 전송'}), 400
 
             except ApiError as e:
                 return jsonify({'message': format(e.message)}), e.status_code
