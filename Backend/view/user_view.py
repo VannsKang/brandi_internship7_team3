@@ -144,7 +144,7 @@ class UserView:
                 conn = get_connection()
 
                 account_info = request.get_json()
-                user_service.update_seller_status(account_info, conn)
+                user_service.update_seller_status(g.user_id, account_info, conn)
 
             except KeyError:
                 conn.rollback()
@@ -261,7 +261,7 @@ class UserView:
                     seller_info = dict(request.form)
                     seller_info['id'] = seller_id
 
-                    user_service.update_seller_info(seller_info, seller_images, conn)
+                    user_service.update_seller_info(g.user_id, seller_info, seller_images, conn)
                     conn.commit()
                     return jsonify({'message': 'SUCCESS'}), 200
 
