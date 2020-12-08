@@ -72,11 +72,9 @@ class UserService:
             raise NotMatchError('아이디와 비밀번호를 다시 확인해주세요.', 400)
 
     def get_seller_list(self, account_id, filter_data, conn):
-        account_info = {
-            'id': account_id
-        }
+        filter_data['id'] = account_id
 
-        account = self.user_dao.get_account_info(account_info, conn)
+        account = self.user_dao.get_account_info(filter_data, conn)
 
         if account['class_id'] == 2:
             raise InvalidUserError('권한이 없는 사용자입니다.', 403)
@@ -197,7 +195,7 @@ class UserService:
 
         return seller_attributes
 
-    def update_seller_status(self, account_info, conn):
+    def update_seller_status(self, modifier_id, account_info, conn):
         if 'id' not in account_info:
             raise KeyError
 
@@ -206,6 +204,8 @@ class UserService:
 
         if len(account_info) != 2:
             raise KeyError
+
+        account_info['modifier_id'] = modifier_id
 
         now = self.user_dao.get_now_time(conn)
         account_info['now'] = now['now']
@@ -258,7 +258,9 @@ class UserService:
 
         return seller_info
 
-    def update_seller_info(self, seller_info, seller_image, conn):
+    def update_seller_info(self, modifier_id, seller_info, seller_image, conn):
+        seller_info['modifier_id'] = modifier_id
+
         allowed_extensions = ['jpg', 'jpeg', 'png']
 
         seller_profile = seller_image['seller_profile_image']
