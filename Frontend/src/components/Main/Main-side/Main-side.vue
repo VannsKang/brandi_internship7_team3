@@ -47,28 +47,27 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-// REVIEW gonna get data from API?
-// import { LOAD_NAV_MENU } from "../../../config";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "Main-side",
 
-  components: {
-    name: "Main-side",
-  },
-
   data() {
     return {
       collapsed: false,
-      // REVIEW gonna get data from API?
-      // menuItems:[],
       // NOTE for open current submenu only
       rootSubmenuKeys: ["sub1", "sub2", "sub3", "sub4", "sub5", "sub6", "sub7"],
       // NOTE for open the menu
       openKeys: ["sub1"],
     };
   },
+
+  // SECTION life Cycle
+  mounted() {
+    this.updateMenuAction();
+  },
+
+  components: {},
 
   methods: {
     openMenu(e) {
@@ -87,18 +86,7 @@ export default {
       }
     },
 
-    // REVIEW gonna get data from API?
-    // async loadNavMenus() {
-    //   try {
-    //     const response = await this.$http.get(LOAD_NAV_MENU);
-    //     const validation = response && response.status === 200;
-    //     !validation && new Error("cannot fetch the data");
-    //     const { menuItems } = await response.data;
-    //     this.menuItems = menuItems;
-    //   } catch (error) {
-    //     console.log("!!error fetch data!!");
-    //   }
-    // },
+    ...mapActions("navmenus", ["updateMenuAction"]),
   },
 
   computed: {
@@ -106,61 +94,7 @@ export default {
       menuItems: ({ navmenus }) => navmenus.menuItems,
     }),
   },
-
-  // SECTION life Cycle
-  mounted() {
-    // REVIEW gonna get data from API?
-    // this.loadNavMenus();
-  },
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../../styles/mixin.scss";
-
-.main-side {
-  background: $nav-side-color;
-
-  > div {
-    > header {
-      background: $nav-side-color;
-      padding: 0;
-      height: 53px;
-
-      > div {
-        height: 100%;
-        @include flexSet("flex-end", "center");
-
-        > i {
-          @include flexSet("center", "center");
-          font-size: 12px;
-          width: 23px;
-          height: 23px;
-          background: rgb(240, 242, 245);
-          border-top-left-radius: 5px;
-          border-bottom-left-radius: 5px;
-        }
-      }
-    }
-
-    > ul {
-      background: $nav-side-color;
-      color: #fff;
-      width: 100%;
-      border: 0;
-
-      > li {
-        border-bottom: 1px solid #444;
-        margin: 0 !important;
-        &:hover {
-          background: $primary-color;
-        }
-
-        > ul {
-          background: $nav-side-color;
-        }
-      }
-    }
-  }
-}
-</style>
+<style src="./Main-side.scss" lang="scss" scoped />

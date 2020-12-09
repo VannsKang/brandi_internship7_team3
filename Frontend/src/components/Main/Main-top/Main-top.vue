@@ -12,11 +12,11 @@
           <a-icon type="down" />
         </div>
         <a-menu class="main-top-user-menu" slot="overlay">
-          <a-menu-item v-if="user_token" @click="handleLogout">
+          <a-menu-item v-if="user_token" @click="userAction" data-name="logout">
             <a-icon type="key" />
             <span>Log Out</span>
           </a-menu-item>
-          <a-menu-item v-else @click="handleLogout">
+          <a-menu-item v-else @click="userAction" data-name="login">
             <a-icon type="key" />
             <span>Log In</span>
           </a-menu-item>
@@ -41,9 +41,24 @@ export default {
   },
 
   methods: {
-    handleLogout() {
-      this.removeTokenAction();
-      this.$router.push(`/`);
+    userAction(e) {
+      // console.log(e.target, "?????????");
+      const { name } = e.domEvent.target.dataset;
+      // console.log(name);
+      name === "logout" || e.target === undefined
+        ? this.$alert
+            .fire({
+              title: "로그아웃 성공!",
+              timer: 2000,
+              icon: "success",
+              showConfirmButton: false,
+            })
+            .then(() => {
+              // NOTE timing! it should be wait before get e.target
+              this.removeTokenAction();
+              this.$router.push(`/`);
+            })
+        : this.$router.push(`/`);
     },
 
     ...mapActions("users", ["removeTokenAction"]),
@@ -58,53 +73,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../../styles/mixin.scss";
-
-.main-top {
-  width: 100%;
-  height: 45px;
-  background: $nav-color;
-  padding: 0 20px;
-  @include flexSet("space-between", "center");
-
-  &-logo {
-    width: 100px;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-
-  &-user {
-    width: 126px;
-    height: 100%;
-    padding-left: 5px;
-    border-left: 1px solid #484a4f;
-    cursor: pointer;
-
-    > div {
-      @include flexSet("center", "center");
-      height: 100%;
-      color: #ddd;
-
-      &:hover {
-        background: #484a4f;
-      }
-      > span {
-        margin-right: 5px;
-      }
-    }
-
-    &-menu {
-      width: 158px;
-      height: 40px;
-      > li {
-        &:hover {
-          background: #eee;
-        }
-      }
-    }
-  }
-}
-</style>
+<style src="./Main-top.scss" lang="scss" scoped />

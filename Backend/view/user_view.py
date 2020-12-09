@@ -1,9 +1,10 @@
 import datetime
 
-from flask                   import request, jsonify, Response
+from flask                   import request, jsonify, Response, g
 from flask_request_validator import Param, JSON, Pattern, validate_params
 from connection              import get_connection
 from utils.exceptions        import ApiError
+from utils.validate          import login_validate
 from io                      import StringIO
 from urllib.parse            import quote
 
@@ -48,7 +49,7 @@ class UserView:
                 return jsonify({'message': format(e.message)}), e.status_code
             except Exception as e:
                 conn.rollback()
-                return jsonify({'message': 'error {}'.format(e)}), 400
+                return jsonify({'message': format(e)}), 400
             finally:
                 conn.close()
 
@@ -79,14 +80,13 @@ class UserView:
 
         # 마스터가 셀러 리스트를 보는 페이지
         @app.route("/master/seller_list", methods=['POST'])
-        # decorator master
+        @login_validate
         def seller_info_list():
             conn = None
 
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
-
                 data = user_service.get_seller_list(filter_data, conn)
 
             except KeyError:
@@ -108,22 +108,13 @@ class UserView:
                 conn.close()
 
         # 셀러 상태
-        @app.route("/seller_status", methods=['GET', 'PUT'])
+        @app.route("/seller_status", methods=['GET'])
         def seller_status_list():
             conn = None
 
             try:
                 conn = get_connection()
-
-                if request.method == 'GET':
-                    seller_status = user_service.get_seller_status(conn)
-                    return jsonify(seller_status), 200
-
-                if request.method == 'PUT':
-                    account_info = request.get_json()
-                    user_service.update_seller_status(account_info, conn)
-                    conn.commit()
-                    return jsonify({'message': 'SUCCESS'}), 200
+                seller_status = user_service.get_seller_status(conn)
 
             except KeyError:
                 return jsonify({'message': '셀러 상태 조회에 유효하지 않은 키 값 전송'}), 400
@@ -136,6 +127,44 @@ class UserView:
 
             except Exception as e:
                 return jsonify({'message': format(e)}), 400
+
+            else:
+                return jsonify(seller_status), 200
+
+            finally:
+                conn.close()
+
+        @app.route("/update/seller_status", methods=['PUT'])
+        @login_validate
+        def update_seller_status():
+            conn = None
+
+            try:
+                conn = get_connection()
+
+                account_info = request.get_json()
+
+                user_service.update_seller_status(g.user_id, account_info, conn)
+
+            except KeyError:
+                conn.rollback()
+                return jsonify({'message': '액션에 따른 셀러 상태 변경에 유효하지 않은 키 값 전송'}), 400
+
+            except TypeError:
+                conn.rollback()
+                return jsonify({'message': '액션에 따른 셀러 상태 변경에 비어있는 값 전송'}), 400
+
+            except ApiError as e:
+                conn.rollback()
+                return jsonify({'message': format(e.message)}), e.status_code
+
+            except Exception as e:
+                conn.rollback()
+                return jsonify({'message': format(e)}), 400
+
+            else:
+                conn.commit()
+                return jsonify({'message': 'SUCCESS'}), 200
 
             finally:
                 conn.close()
@@ -168,6 +197,7 @@ class UserView:
                 conn.close()
 
         @app.route("/seller_info/download", methods=['POST'])
+        @login_validate
         def seller_info_list_download():
             conn = None
             output_stream = None
@@ -175,12 +205,12 @@ class UserView:
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
+                print(filter_data)
                 seller_info = user_service.get_seller_list(filter_data, conn)
 
                 created_excel = user_service.create_excel_seller_info(seller_info)
 
                 output_stream = StringIO()
-                # output_stream.write(u'\ufeff')
                 created_excel.to_csv(output_stream)
 
                 now_date = datetime.datetime.now().strftime("%Y%m%d")[2:]
@@ -217,6 +247,7 @@ class UserView:
 
         # 셀러 정보 조회/수정
         @app.route("/sellers/<int:seller_id>", methods=['GET', 'PUT'])
+        @login_validate
         def seller_detail(seller_id):
             conn = None
 
@@ -228,9 +259,10 @@ class UserView:
                     return jsonify(seller), 200
 
                 if request.method == 'PUT':
-                    seller_images = dict(request.files)
-                    seller_info = dict(request.form)
-                    seller_info['id'] = seller_id
+                    seller_images              = dict(request.files)
+                    seller_info                = dict(request.form)
+                    seller_info['id']          = seller_id
+                    seller_info['modifier_id'] = g.user_id
 
                     user_service.update_seller_info(seller_info, seller_images, conn)
                     conn.commit()
@@ -238,11 +270,11 @@ class UserView:
 
             except KeyError:
                 conn.rollback()
-                return jsonify({'message': '셀러 속성 조회에 유효하지 않은 키 값 전송'}), 400
+                return jsonify({'message': '셀러 정보 조회에 유효하지 않은 키 값 전송'}), 400
 
             except TypeError:
                 conn.rollback()
-                return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
+                return jsonify({'message': '셀러 정보 조회에 비어있는 값 전송'}), 400
 
             except ApiError as e:
                 return jsonify({'message': format(e.message)}), e.status_code
@@ -251,7 +283,8 @@ class UserView:
                 return jsonify({'message': format(e)}), 400
 
             finally:
-                conn.close()
+                if conn is not None:
+                    conn.close()
 
         # NOTE soomyung API search seller result    
         @app.route("/sellers/search", methods=["GET"])
@@ -269,3 +302,29 @@ class UserView:
                 return jsonify({'meassa'}), 400
             else:
                 return jsonify(filtered_sellers), 200
+
+        @app.route("/seller_attributes_categories", methods=["GET"])
+        def get_attributes_categories():
+            conn = None
+
+            try:
+                conn = get_connection()
+                filter_data = dict(request.args)
+                seller_attributes_categories = user_service.get_filtered_attributes_categories(filter_data, conn)
+            except KeyError:
+                return jsonify({'message': '셀러 속성 카테고리 정보 조회에 유효하지 않은 키 값 전송'}), 400
+
+            except TypeError:
+                return jsonify({'message': '셀러 속성 카테고리 정보 조회에 비어있는 값 전송'}), 400
+
+            except ApiError as e:
+                return jsonify({'message': format(e.message)}), e.status_code
+
+            except Exception as e:
+                return jsonify({'message': format(e)}), 400
+
+            else:
+                return jsonify(seller_attributes_categories), 200
+            finally:
+                if conn is not None:
+                    conn.close()

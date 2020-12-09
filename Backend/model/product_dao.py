@@ -7,7 +7,7 @@ class ProductDao:
     # 상품 리스트 표출
     def get_products(self, filter_data, conn):
         with conn.cursor(pymysql.cursors.DictCursor) as cursor:
-            # if g.user_id:
+            if g.user_id:
                 sql = """
                     SELECT
                         pi.start_date  AS created_at,     

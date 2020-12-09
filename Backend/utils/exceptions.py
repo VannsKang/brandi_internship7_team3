@@ -40,6 +40,11 @@ class InvalidValueError(ApiError):
     pass
 
 
+class InvalidUserError(ApiError):
+    pass
+
+
+
 class UpdateFailError(ApiError):
     pass
 

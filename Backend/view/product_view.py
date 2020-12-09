@@ -11,7 +11,7 @@ class ProductView:
         product_service = service.product_service
 
         @app.route('/master/product_list', methods=['GET'])
-        # @login_validate
+        @login_validate
         @validate_params(
             Param('start_date', GET, str, required=False,
                   rules=[Pattern(r"([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))")]),
@@ -134,12 +134,11 @@ class ProductView:
                 return jsonify({'message': '상품 정보에 유효하지 않은 키 값 전송'}), 404
             except TypeError:
                 return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
-            except Exception as e:
-                return jsonify({'message': 'error {}'.format(e)}), 500
             except ApiError as e:
                 conn.rollback()
                 return jsonify({'message': format(e.message)}), e.status_code
-
+            except Exception as e:
+                return jsonify({'message': 'error {}'.format(e)}), 500
             else:
                 conn.commit()
                 return jsonify({'message': '생성 성공'}), 201

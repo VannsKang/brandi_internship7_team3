@@ -1,0 +1,76 @@
+@import "../../styles/mixin.scss";
+
+.signup {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: $background-color;
+  @include flexSet("space-between", "center", "column");
+
+  &-main {
+    width: 500px;
+    margin: 0 auto;
+    padding: 20px 30px 15px;
+    background: #fff;
+    border-radius: 4px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    > form {
+      width: 100%;
+    }
+  }
+
+  &-title h3 {
+    margin-bottom: 15px;
+    font-size: 24px;
+  }
+
+  &-subtitle {
+    width: 100%;
+    margin-bottom: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+    @include flexSet("center", "center");
+
+    > div {
+      width: 408px;
+      height: 45px;
+      background: $primary-color;
+      color: #ddd;
+      font-size: 20px;
+      font-weight: 500;
+      @include flexSet("center", "center");
+    }
+  }
+
+  &-form {
+    width: 408px;
+    margin: 0 auto;
+
+    &-button {
+      margin-top: 40px;
+      @include flexSet("center", "center");
+
+      button {
+        padding: 0 10px;
+
+        &:first-child {
+          background: $confirm-color;
+          border: 1px solid $confirm-color;
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+
+        &:last-child {
+          margin-left: -1px;
+          background: $reject-color;
+          border: 1px solid $reject-color;
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+        }
+      }
+    }
+  }
+}

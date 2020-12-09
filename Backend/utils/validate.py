@@ -1,9 +1,9 @@
 import jwt
 import re
 
-from flask import request, jsonify, g
-from config import SECRET, ALGORITHM
-from functools import wraps
+from flask      import request, jsonify, g
+from config     import SECRET, ALGORITHM
+from functools  import wraps
 
 
 def login_validate(func):
@@ -11,7 +11,7 @@ def login_validate(func):
     def decorated_function(*args, **kwargs):
         token = request.headers.get('Authorization', None)
         if token is None:
-            return jsonify({'message': 'TOKEN_DOES_NOT_EXIST'}), 403
+            return jsonify({'message': 'TOKEN_DOES_NOT_EXIST'}), 401
 
         try:
             payload = jwt.decode(token, SECRET['secret'], ALGORITHM['algorithm'])
@@ -22,7 +22,6 @@ def login_validate(func):
 
         except Exception as e:
             return jsonify({'message': format(e)}), 400
-
     return decorated_function
 
 
