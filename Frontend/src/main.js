@@ -20,7 +20,7 @@ Vue.use(Antd);
 Vue.prototype.$http = axios;
 Vue.prototype.$alert = Swal;
 
-const router = new VueRouter({ routes: Routes, mode: "history" });
+export const router = new VueRouter({ routes: Routes, mode: "history" });
 
 new Vue({
   el: "#app",

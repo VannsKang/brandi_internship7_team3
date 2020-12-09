@@ -10,9 +10,7 @@
         <a-icon type="left" />
       </a-button>
       <!-- SECTION pagenation number -->
-      <a-input-number
-        :value="max_page < page_number ? max_page : page_number"
-      />
+      <a-input-number :value="page_number" />
 
       <a-button
         data-id="plus"

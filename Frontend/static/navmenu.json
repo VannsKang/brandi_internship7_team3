@@ -33,7 +33,7 @@
       "menu_name": "상품관리",
       "menu_icon": "shopping",
       "sub_menus": [
-        { "id": 11, "name": "상품 관리", "link": "product_manage" },
+        { "id": 11, "name": "상품 관리", "link": "products" },
         { "id": 12, "name": "상품 등록", "link": "product_enroll" }
       ]
     },
