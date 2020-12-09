@@ -71,13 +71,11 @@ class UserService:
         else:
             raise NotMatchError('아이디와 비밀번호를 다시 확인해주세요.', 400)
 
-    def get_seller_list(self, account_id, filter_data, conn):
-        filter_data['id'] = account_id
+    def get_seller_list(self, filter_data, conn):
+        # account = self.user_dao.get_account_info({'id': g.user}, conn)
 
-        account = self.user_dao.get_account_info(filter_data, conn)
-
-        if account['class_id'] == 2:
-            raise InvalidUserError('권한이 없는 사용자입니다.', 403)
+        # if account['class_id'] == 2:
+        #     raise InvalidUserError('권한이 없는 사용자입니다.', 403)
 
         seller_list = self.user_dao.get_seller_list(filter_data, conn)
 
@@ -258,16 +256,30 @@ class UserService:
 
         return seller_info
 
-    def update_seller_info(self, modifier_id, seller_info, seller_image, conn):
-        seller_info['modifier_id'] = modifier_id
+    def update_seller_info(self, seller_info, seller_image, conn):
 
-        allowed_extensions = ['jpg', 'jpeg', 'png']
+        # 현재 유저 정보 가져오기
+        previous_seller_info = self.user_dao.get_seller(seller_info, conn)
+
+        # 삭제된 셀러일 경우 에러 처리
+        if previous_seller_info['is_deleted']:
+            raise DeleteSellerError('삭제된 셀러 입니다.', 400)
+
+        # 현재 시간 불러오기 및 셀러 정보에 저장
+        now = self.user_dao.get_now_time(conn)
+        now = now['now']
+        seller_info['now'] = now
+
+        # 업데이트 전 가장 최신의 셀러 정보에 현재 시간 저장
+        previous_seller_info['now'] = now
+
+        allowed_extensions = ['image/jpg', 'image/jpeg', 'image/png']
 
         seller_profile = seller_image['seller_profile_image']
         seller_background = seller_image['seller_background_image']
 
-        profile_image_extension = seller_profile.filename.split('.')[-1]
-        background_image_extension = seller_background.filename.split('.')[-1]
+        profile_image_extension = seller_profile.content_type
+        background_image_extension = seller_background.content_type
 
         if profile_image_extension not in allowed_extensions:
             raise NotSupportImageFormat('지원하지 않는 이미지 형식입니다. 셀러 프로필 이미지를 확인하세요.', 400)
@@ -275,44 +287,31 @@ class UserService:
         if background_image_extension not in allowed_extensions:
             raise NotSupportImageFormat('지원하지 않는 이미지 형식입니다. 셀러 배경 이미지를 확인하세요.', 400)
 
-        # 현재 시간 불러오기 및 셀러 정보에 저장
-        now = self.user_dao.get_now_time(conn)
-        now = now['now']
-        seller_info['now'] = now
-
-        # 현재 유저 정보 가져오기
-        previous_seller_info = self.user_dao.get_seller(seller_info, conn)
-
-        # 업데이트 전 가장 최신의 셀러 정보에 현재 시간 저장
-        previous_seller_info['now'] = now
-
         profile_image_uuid = str(uuid.uuid1())
         background_image_uuid = str(uuid.uuid1())
 
         seller_profile_image_url = f'seller/{now.year}' \
                                    f'/{now.month}' \
                                    f'/{now.day}' \
-                                   f'/{previous_seller_info["seller_id"]}_profile_{profile_image_uuid}' \
-                                   f'.{profile_image_extension}'
+                                   f'/{previous_seller_info["seller_id"]}_profile_{profile_image_uuid}'
 
         seller_background_image_url = f'seller/{now.year}' \
                                       f'/{now.month}' \
                                       f'/{now.day}' \
-                                      f'/{previous_seller_info["seller_id"]}_background_{background_image_uuid}' \
-                                      f'.{background_image_extension}'
+                                      f'/{previous_seller_info["seller_id"]}_background_{background_image_uuid}'
 
         self.s3.put_object(
             Body=seller_profile,
             Bucket='brandistorage',
             Key=seller_profile_image_url,
-            ContentType="mimetype"
+            ContentType=profile_image_extension
         )
 
         self.s3.put_object(
             Body=seller_background,
             Bucket='brandistorage',
             Key=seller_background_image_url,
-            ContentType="mimetype"
+            ContentType=background_image_extension
         )
 
         # 셀러 이미지 및 배경이미지 경로 셀러 정보에 저장
@@ -321,10 +320,6 @@ class UserService:
         seller_info['seller_background'] = s3_bucket_url + seller_background_image_url
 
         seller_info = dict(previous_seller_info, **seller_info)
-
-        # 삭제된 셀러일 경우 에러 처리
-        if previous_seller_info['is_deleted']:
-            raise DeleteSellerError('삭제된 셀러 입니다.', 400)
 
         # 수정하려는 셀러 정보 생성
         self.user_dao.insert_seller_info(seller_info, conn)

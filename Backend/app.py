@@ -40,7 +40,6 @@ def create_app(test_config=None):
     UserView.create_endpoints(app, services)
     ProductView.create_endpoints(app, services)
 
-
     @app.errorhandler(Exception)
     def handle_error(error):
         if type(error) is ApiError:
