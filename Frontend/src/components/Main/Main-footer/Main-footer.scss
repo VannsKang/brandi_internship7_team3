@@ -1,0 +1,13 @@
+@import "../../../styles/mixin.scss";
+
+.main-footer {
+  width: 100%;
+  padding: 10px 20px 5px;
+  background: $nav-side-color;
+  color: #999ba2;
+  font-size: 12px;
+
+  div {
+    @include flexSet("center", "flex-start", "column");
+  }
+}

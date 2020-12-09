@@ -1,0 +1,14 @@
+@import "../../../styles/mixin.scss";
+
+.logo-section {
+  @include flexSet("center", "center");
+
+  .logo {
+    width: 130px;
+    margin-bottom: 40px;
+
+    img {
+      width: 100%;
+    }
+  }
+}

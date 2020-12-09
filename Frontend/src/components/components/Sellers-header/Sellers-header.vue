@@ -32,21 +32,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-.sellers {
-  &-header {
-    font-size: 26px !important;
-    height: 68px;
-  }
-  &-breadcrumb {
-    width: 100%;
-    background: #e8e8e8;
-    padding: 7px 0 7px 25px;
-    font-size: 13px;
-
-    > i {
-      margin-right: 10px;
-    }
-  }
-}
-</style>
+<style src="./Sellers-header.scss" lang="scss" scoped />

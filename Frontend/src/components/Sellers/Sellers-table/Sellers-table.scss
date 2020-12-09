@@ -1,0 +1,162 @@
+@import "../../../styles/mixin.scss";
+
+.sellers-content-main-table {
+  margin: 0 10px;
+  border: 1px solid #ddd;
+  overflow-x: scroll;
+
+  > table {
+    min-width: 1500px;
+    border-collapse: separate;
+    /* margin-bottom: 5px; */
+    > thead {
+      height: 36px;
+      background: #eee;
+      font-weight: 700;
+      > tr {
+        > th {
+          padding: 5px 5px;
+          border-right: 1px solid #ddd;
+          > div {
+            width: 100%;
+          }
+          &:nth-child(1) {
+            width: 40px;
+            > div {
+              @include flexSet("center", "center");
+            }
+          }
+          &:nth-child(2) {
+            width: 60px;
+          }
+          &:nth-child(3) {
+            width: 118px;
+          }
+          &:nth-child(4) {
+            width: 115px;
+          }
+          &:nth-child(5) {
+            width: 140px;
+          }
+          &:nth-child(6) {
+            width: 96px;
+          }
+          &:nth-child(7) {
+            width: 65px;
+          }
+          &:nth-child(8) {
+            width: 137px;
+          }
+          &:nth-child(9) {
+            width: 105px;
+          }
+          &:nth-child(10) {
+            width: 85px;
+          }
+          &:nth-child(11) {
+            width: 179px;
+          }
+          &:nth-child(12) {
+            width: 271px;
+            border-right: 0;
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        height: 38px;
+        &:nth-child(even) {
+          background: #f5f5f5;
+        }
+
+        &:hover {
+          background: darken($color: #f5f5f5, $amount: 2%);
+        }
+
+        &:first-child {
+          &:hover {
+            background: none;
+          }
+
+          td {
+            padding: 10px;
+            > div {
+              @include flexSet(null, "flex-start", "column");
+
+              > button {
+                padding: 5px 10px;
+                font-size: 12px;
+
+                > span {
+                  margin-left: 3px;
+                }
+
+                &:first-child {
+                  margin-bottom: 5px;
+                  background: #f0ad4e;
+                  border-color: #eea236;
+
+                  &:hover {
+                    background: darken(#f0ad4e, 10%);
+                  }
+                }
+
+                &:last-child {
+                  background: #d9534f;
+                  border-color: #d43f3a;
+
+                  &:hover {
+                    background: darken(#d9534f, 10%);
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        td {
+          padding: 5px 10px;
+          border-top: 1px solid #ddd;
+          font-size: 13px;
+          border-right: 1px solid #ddd;
+
+          &:nth-child(3) {
+            color: #0d638f;
+            cursor: pointer;
+            &:hover {
+              text-decoration: underline;
+            }
+            div {
+            }
+          }
+          &:nth-child(11) {
+            > div {
+              > span {
+                &:last-child {
+                  margin-top: 5px;
+                }
+              }
+            }
+          }
+          &:last-child {
+            border-right: 0;
+            > span {
+              button {
+                height: 25px;
+                margin-right: 5px;
+                padding: 3px;
+                color: #fff;
+                line-height: 12px;
+                font-size: 12px;
+                &:last-child {
+                  margin-right: 0;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

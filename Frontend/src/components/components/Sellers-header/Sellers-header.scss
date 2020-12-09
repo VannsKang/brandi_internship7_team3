@@ -1,0 +1,16 @@
+.sellers {
+  &-header {
+    height: 68px;
+    font-size: 26px !important;
+  }
+  &-breadcrumb {
+    width: 100%;
+    padding: 7px 0 7px 25px;
+    background: #e8e8e8;
+    font-size: 13px;
+
+    > i {
+      margin-right: 10px;
+    }
+  }
+}

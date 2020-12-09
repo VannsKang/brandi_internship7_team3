@@ -1,0 +1,28 @@
+@import "../../../styles/mixin.scss";
+
+.sellers-content-main-pagination {
+  margin: 10px;
+  color: #111;
+  @include flexSet("flex-start", "center");
+
+  &-button {
+    width: 110px;
+    margin: 0 10px;
+    @include flexSet("space-between", "center");
+
+    > button {
+      padding: 8px;
+      font-size: 9px;
+      @include flexSet("center", "center");
+    }
+
+    .ant-input-number {
+      width: 45px;
+    }
+  }
+
+  &-group {
+    width: 80px;
+    margin: 0 10px;
+  }
+}

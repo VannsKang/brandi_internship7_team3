@@ -84,7 +84,6 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import { SELLER_ATTRIBUTE_ID } from "../../../config";
 
 export default {
   name: "Signup-seller",
@@ -94,50 +93,20 @@ export default {
   },
 
   computed: {
-    // SECTION vuex
     ...mapState({
       seller_attribute_id: ({ sellers }) => sellers.seller_attribute_id,
     }),
   },
 
   methods: {
-    // REVIEW gonna get data from API?
-    async getSellerAttribute() {
-      try {
-        const response = await this.$http.get(SELLER_ATTRIBUTE_ID);
-        const validation = response && response.status === 200;
-        !validation && new Error("cannot fetch the data");
-        console.log(response);
-        const result = response.data;
-        this.updateSellerAttributeAction(result);
-      } catch (error) {
-        console.log("!!error fetch data!!");
-      }
-    },
-
-    // SECTION vuex
     ...mapActions("sellers", ["updateSellerAttributeAction"]),
   },
 
   // SECTION lifecycle
   mounted() {
-    this.getSellerAttribute();
+    this.updateSellerAttributeAction();
   },
 };
 </script>
 
-<style lang="scss" scoped>
-.signup-form {
-  &-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 5px;
-  }
-
-  .ant-form {
-    &-item {
-      margin-bottom: 8px;
-    }
-  }
-}
-</style>
+<style src="./Signup-seller.scss" lang="scss" scoped />

@@ -10,6 +10,9 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
+// LINK component
 import mainTop from "./Main-top/Main-top";
 import mainSide from "./Main-side/Main-side";
 import mainFooter from "./Main-footer/Main-footer";
@@ -26,21 +29,17 @@ export default {
   data() {
     return {};
   },
+
+  computed: {
+    ...mapState({
+      user_token: ({ users }) => users.user_token,
+    }),
+  },
+
+  mounted() {
+    !this.user_token && this.$router.push("/403");
+  },
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../styles/mixin.scss";
-
-.main {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-
-  &-sider {
-    min-height: calc(100% - 96px);
-  }
-}
-</style>
+<style src="./Main.scss" lang="scss" scoped />
