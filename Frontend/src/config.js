@@ -12,3 +12,5 @@ export const EXCEL_QUERY = "http://10.251.1.115:5000/seller_info/download";
 export const ACTION_QEURY = "http://10.251.1.115:5000/seller_status";
 export const SELLER_STATUS = "http://10.251.1.115:5000/seller_status";
 export const SELLER_ATTRIBUTE_ID = "http://10.251.1.115:5000/seller_attributes";
+export const SELLER_DETAIL = "http://10.251.1.115:5000/sellers/2"
+export const SELLER_ATTRIBUTE_CATEGORIES = "http://10.251.1.115:5000/seller_attribute_categories"

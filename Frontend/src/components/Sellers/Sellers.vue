@@ -1,5 +1,5 @@
 <template>
-  <a-layout v-if="user_token" class="sellers">
+  <a-layout class="sellers">
     <div>
       <sellers-header :header="seller_header" />
 
@@ -50,7 +50,7 @@
     </div>
   </a-layout>
   <!-- ANCHOR without Token -->
-  <a-layout v-else>
+  <!-- <a-layout v-else>
     <a-result status="404" title="404" sub-title="잘못된 접근입니다!">
       <template #extra>
         <a-button type="primary" @click="backHome" class="backHome">
@@ -58,7 +58,7 @@
         </a-button>
       </template>
     </a-result>
-  </a-layout>
+  </a-layout> -->
 </template>
 
 <script>
@@ -287,23 +287,42 @@ export default {
     //  TODO Excel download
     async downloadExcel() {
       try {
-        const response = await this.$http.post(EXCEL_QUERY, {});
-        // const url = window.URL.createObjectURL(new Blob([response.data]));
+        this.$http({
+    method: 'POST',
+    url: "http://localhost:5000/seller_info/download",
+    responseType: 'blob',
+    headers: {
+        "Content-Type": "application/json"
+    },   
+    data: {
+     
+    } 
+})
+.then((response) => {
+    const url = window.URL.createObjectURL(new Blob([response.data], { type: response.headers['content-type'] }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'test.csv');
+    document.body.appendChild(link);
+    link.click();
+})
+        // const response = await this.$http.post(EXCEL_QUERY, {});
+        // // const url = window.URL.createObjectURL(new Blob([response.data]));
+        // // const link = document.createElement("a");
+        // // link.href = url;
+        // // link.setAttribute("download", "template.xlsx");
+        // // document.body.appendChild(link);
+        // // link.click();
+        // const url = window.URL.createObjectURL(
+        //   new Blob([response.data], {
+        //     type: response.headers["content-type"],
+        //   })
+        // );
         // const link = document.createElement("a");
         // link.href = url;
-        // link.setAttribute("download", "template.xlsx");
+        // link.setAttribute("download", "test.xlsx");
         // document.body.appendChild(link);
         // link.click();
-        const url = window.URL.createObjectURL(
-          new Blob([response.data], {
-            type: response.headers["content-type"],
-          })
-        );
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "test.xlsx");
-        document.body.appendChild(link);
-        link.click();
       } catch (error) {
         console.log("!!!error!!!");
       }
