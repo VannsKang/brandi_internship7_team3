@@ -61,15 +61,6 @@ const state = () => ({
 const getters = {
   max_page: (state) =>
     Math.ceil(state.seller_count / state.page.currentPagination),
-
-  update_page: (state) => {
-    if (getters.max_page < state.page.page_number) {
-      state.page.page_nubmer = getters.max_page;
-      return state.page.page_number;
-    } else {
-      return state.page.page_number;
-    }
-  },
 };
 
 // mutations
@@ -139,12 +130,26 @@ const mutations = {
     state.plainOptions = allDataId;
   },
 
+  // SECTION loading
+
   changeLoadingTrue(state) {
     state.isLoading = true;
   },
 
   changeLoadingFalse(state) {
     state.isLoading = false;
+  },
+
+  // SECTION page control
+
+  resetPage(state) {
+    state.page.page_number = 1;
+  },
+
+  matchPage(state) {
+    state.page.page_number = Math.ceil(
+      state.seller_count / state.page.currentPagination
+    );
   },
 };
 

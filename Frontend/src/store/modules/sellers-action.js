@@ -185,6 +185,7 @@ export const actions = {
       offset: 0,
       limit: value,
     };
+    commit("matchPage");
     actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
   },
 
@@ -225,8 +226,9 @@ export const actions = {
     };
     // NOTE action applied
     await actions.queryAction({ commit, rootState }, ACTION_QUERY, actionBody);
-    // NOTE update table
-    await actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
+    // NOTE update table with reset pagenumber
+    commit("resetPage");
+    actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
   },
 
   // TODO checkbox control
