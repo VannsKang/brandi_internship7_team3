@@ -22,11 +22,11 @@ class ProductView:
             Param('product_code', GET, str, required=False),
             Param('product_number', GET, int, required=False),
             Param('seller_attribute_id', GET, list, required=False),
-            Param('offset', GET, int),
-            Param('limit', GET, int),
+            Param('offset', GET, int, required=False),
+            Param('limit', GET, int, required=False),
             Param('sell_info', GET, bool, required=False),
             Param('show_info', GET, bool, required=False),
-            Param('discount_info', GET, bool, required=False)
+            Param('sale_info', GET, bool, required=False)
         )
         def get_product_list(*args):
             conn = None
@@ -42,11 +42,12 @@ class ProductView:
                 'limit': args[8],
                 'sell_info': args[9],
                 'show_info': args[10],
-                'discount_info': args[11]
+                'sale_info': args[11]
             }
             try:
                 conn = get_connection()
                 get_product_list_result = product_service.get_products(filter_data, conn)
+
                 if get_product_list_result:
                     return jsonify({'message': 'SUCCESS',
                                     'product_list': get_product_list_result['product_list'],
@@ -57,6 +58,7 @@ class ProductView:
                                     'product_count': 0}), 200
             except Exception as e:
                 return jsonify({'message': format(e)}), 500
+
             finally:
                 conn.close()
 
