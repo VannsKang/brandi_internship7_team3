@@ -11,7 +11,7 @@ def login_validate(func):
     def decorated_function(*args, **kwargs):
         token = request.headers.get('Authorization', None)
         if token is None:
-            return jsonify({'message': 'TOKEN_DOES_NOT_EXIST'}), 403
+            return jsonify({'message': 'TOKEN_DOES_NOT_EXIST'}), 401
 
         try:
             payload = jwt.decode(token, SECRET['secret'], ALGORITHM['algorithm'])

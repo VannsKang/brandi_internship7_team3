@@ -87,7 +87,7 @@ class UserView:
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
-                data = user_service.get_seller_list(g.user_id, filter_data, conn)
+                data = user_service.get_seller_list(filter_data, conn)
 
             except KeyError:
                 return jsonify({'message': '셀러 정보 조회에 유효하지 않은 키 값 전송'}), 400
@@ -143,6 +143,7 @@ class UserView:
                 conn = get_connection()
 
                 account_info = request.get_json()
+
                 user_service.update_seller_status(g.user_id, account_info, conn)
 
             except KeyError:
@@ -196,6 +197,7 @@ class UserView:
                 conn.close()
 
         @app.route("/seller_info/download", methods=['POST'])
+        @login_validate
         def seller_info_list_download():
             conn = None
             output_stream = None
@@ -203,6 +205,7 @@ class UserView:
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
+                print(filter_data)
                 seller_info = user_service.get_seller_list(filter_data, conn)
 
                 created_excel = user_service.create_excel_seller_info(seller_info)
@@ -256,11 +259,12 @@ class UserView:
                     return jsonify(seller), 200
 
                 if request.method == 'PUT':
-                    seller_images = dict(request.files)
-                    seller_info = dict(request.form)
-                    seller_info['id'] = seller_id
+                    seller_images              = dict(request.files)
+                    seller_info                = dict(request.form)
+                    seller_info['id']          = seller_id
+                    seller_info['modifier_id'] = g.user_id
 
-                    user_service.update_seller_info(g.user_id, seller_info, seller_images, conn)
+                    user_service.update_seller_info(seller_info, seller_images, conn)
                     conn.commit()
                     return jsonify({'message': 'SUCCESS'}), 200
 
@@ -279,7 +283,8 @@ class UserView:
                 return jsonify({'message': format(e)}), 400
 
             finally:
-                conn.close()
+                if conn is not None:
+                    conn.close()
 
         # NOTE soomyung API search seller result    
         @app.route("/sellers/search", methods=["GET"])
@@ -297,3 +302,29 @@ class UserView:
                 return jsonify({'meassa'}), 400
             else:
                 return jsonify(filtered_sellers), 200
+
+        @app.route("/seller_attributes_categories", methods=["GET"])
+        def get_attributes_categories():
+            conn = None
+
+            try:
+                conn = get_connection()
+                filter_data = dict(request.args)
+                seller_attributes_categories = user_service.get_filtered_attributes_categories(filter_data, conn)
+            except KeyError:
+                return jsonify({'message': '셀러 속성 카테고리 정보 조회에 유효하지 않은 키 값 전송'}), 400
+
+            except TypeError:
+                return jsonify({'message': '셀러 속성 카테고리 정보 조회에 비어있는 값 전송'}), 400
+
+            except ApiError as e:
+                return jsonify({'message': format(e.message)}), e.status_code
+
+            except Exception as e:
+                return jsonify({'message': format(e)}), 400
+
+            else:
+                return jsonify(seller_attributes_categories), 200
+            finally:
+                if conn is not None:
+                    conn.close()
