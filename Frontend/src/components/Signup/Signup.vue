@@ -103,7 +103,7 @@ export default {
         swalWithBootstrapButtons.fire({
           title: "회원 가입 취소 완료",
           text: "회원 가입이 취소되었습니다",
-          icon: "success",
+          icon: "warning",
           timer: 1000,
           showConfirmButton: false,
         });

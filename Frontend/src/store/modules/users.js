@@ -41,6 +41,8 @@ const actions = {
     if (payload.err)
       return Swal.fire({
         title: "잘못된 로그인 시도입니다!",
+        text:
+          "혹시 처음이신가요? 여성복 쇼핑몰 브랜디에 가입해서 다양한 상품을 만나보세요!",
         timer: 2000,
         icon: "error",
         showConfirmButton: false,
@@ -62,30 +64,31 @@ const actions = {
         { commit },
         { token: token, user_id: payload.values.user_id }
       );
-      if (message === "SUCCESS!") {
-        Swal.fire({
-          title: "로그인 성공!",
-          timer: 2000,
-          icon: "success",
-          showConfirmButton: false,
-        });
-        router.push("/main/seller");
-      }
+      if (message === "SUCCESS!")
+        return Swal.fire(
+          {
+            title: "로그인 성공!",
+            timer: 2000,
+            icon: "success",
+            showConfirmButton: false,
+          },
+          router.push("/main/seller")
+        );
     } catch (error) {
+      console.log(`!!error fetch data!!: ${error}`);
       Swal.fire({
-        title: "잘못된 로그인 시도입니다!",
+        title: "존재하지 않는 회원입니다!",
         timer: 2000,
         icon: "error",
         showConfirmButton: false,
       });
-      console.log("!!error fetch data!!");
     }
   },
 
   async signupAction({ commmit }, payload) {
     if (payload.err)
       return Swal.fire({
-        title: "잘못된 가입입니다!",
+        title: "필수 항목을 입력해주세요!",
         timer: 1000,
         icon: "error",
         showConfirmButton: false,
