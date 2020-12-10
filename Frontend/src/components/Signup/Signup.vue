@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 // LINK components
 import loginFooter from "../components/Login-footer/Login-footer";
@@ -45,16 +45,13 @@ import SignupBasic from "./Signup-basic/Signup-basic.vue";
 import SignupOwner from "./Signup-owner/Signup-owner.vue";
 import SignupSeller from "./Signup-seller/Signup-seller";
 
-// LINK API
-import { SIGNUP_API } from "../../config";
-
 export default {
   components: {
-    "login-footer": loginFooter,
-    "login-logo": loginLogo,
-    "signup-basic": SignupBasic,
-    "signup-owner": SignupOwner,
-    "signup-seller": SignupSeller,
+    loginFooter,
+    loginLogo,
+    SignupBasic,
+    SignupOwner,
+    SignupSeller,
   },
 
   data() {
@@ -78,42 +75,8 @@ export default {
 
   methods: {
     submitSignup() {
-      this.form.validateFieldsAndScroll(async (err, values) => {
-        if (err)
-          return this.$alert.fire({
-            title: "잘못된 가입입니다!",
-            timer: 1000,
-            icon: "error",
-            showConfirmButton: false,
-          });
-        try {
-          // ANCHOR mockdata
-          // const response = await this.$http.get(SIGNUP_API);
-
-          // ANCHOR backend
-          const response = await this.$http.post(SIGNUP_API, values);
-          const validation = response && response.status === 200;
-          !validation && new Error("cannot fetch the data");
-          const { message } = response.data;
-          console.log(message, values);
-          if (message === "SUCCESS") {
-            this.$alert.fire({
-              title: "회원 가입 완료",
-              timer: 1000,
-              icon: "success",
-              showConfirmButton: false,
-            });
-            this.$router.push(`/`);
-          }
-        } catch (error) {
-          console.log("!!error fetch data!!");
-          this.$alert.fire({
-            title: "이미 가입된 사용자입니다.",
-            timer: 1000,
-            icon: "error",
-            showConfirmButton: false,
-          });
-        }
+      this.form.validateFieldsAndScroll((err, values) => {
+        this.signupAction({ err, values });
       });
     },
 
@@ -140,7 +103,7 @@ export default {
         swalWithBootstrapButtons.fire({
           title: "회원 가입 취소 완료",
           text: "회원 가입이 취소되었습니다",
-          icon: "success",
+          icon: "warning",
           timer: 1000,
           showConfirmButton: false,
         });
@@ -156,6 +119,7 @@ export default {
           showConfirmButton: false,
         });
     },
+    ...mapActions("users", ["signupAction"]),
   },
 };
 </script>

@@ -113,8 +113,10 @@ export const actions = {
     const { value, id } = e.target;
     if (value === "") {
       commit("resetSearchInput");
+      commit("resetPage");
       actions.initTableAction({ commit, rootState });
     } else {
+      commit("resetPage");
       actions.searchData({ commit, rootState }, value, id);
     }
   },
@@ -157,7 +159,7 @@ export const actions = {
   resetSearch({ commit, state, rootState }) {
     commit("changeLoadingTrue");
     commit("resetSearchInput");
-
+    commit("resetPage");
     const updateBody = {
       offset: 0,
       limit: state.page.currentPagination,
@@ -180,11 +182,13 @@ export const actions = {
 
   controlPagesDrop({ commit, state, rootState }, value) {
     commit("changeLoadingTrue");
-    state.page.currentPagination = value;
+    commit("resetPage");
+    commit("updatePagination", value);
     const updateBody = {
-      offset: 0,
+      offset: (state.page.page_number - 1) * value,
       limit: value,
     };
+    // commit("matchPage");
     actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
   },
 
@@ -225,8 +229,9 @@ export const actions = {
     };
     // NOTE action applied
     await actions.queryAction({ commit, rootState }, ACTION_QUERY, actionBody);
-    // NOTE update table
-    await actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
+    // NOTE update table with reset pagenumber
+    commit("resetPage");
+    actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
   },
 
   // TODO checkbox control

@@ -78,15 +78,12 @@ import { mapActions, mapState } from "vuex";
 import loginLogo from "../components/Login-logo/Login-logo";
 import loginFooter from "../components/Login-footer/Login-footer";
 
-// LINK API
-import { SIGNIN_API } from "../../config";
-
 export default {
   name: "Login",
 
   components: {
-    "login-footer": loginFooter,
-    "login-logo": loginLogo,
+    loginFooter,
+    loginLogo,
   },
 
   data() {
@@ -109,47 +106,12 @@ export default {
 
   methods: {
     handleSubmit() {
-      this.form.validateFields(async (err, values) => {
-        if (err)
-          return this.$alert.fire({
-            title: "잘못된 로그인 시도입니다!",
-            timer: 2000,
-            icon: "error",
-            showConfirmButton: false,
-          });
-        try {
-          // NOTE mockdata
-          // const response = await this.$http.get(SIGNIN_API);
-
-          // NOTE backend
-          const response = await this.$http.post(SIGNIN_API, values);
-          const validation = response && response.status === 200;
-          !validation && new Error("cannot fetch the data");
-          const { message, token } = response.data;
-          console.log(message, values.user_id);
-          this.getTokenAction({ token: token, user_id: values.user_id });
-          if (message === "SUCCESS!") {
-            this.$alert.fire({
-              title: "로그인 성공!",
-              timer: 2000,
-              icon: "success",
-              showConfirmButton: false,
-            });
-            this.$router.push("/main/seller");
-          }
-        } catch (error) {
-          this.$alert.fire({
-            title: "잘못된 로그인 시도입니다!",
-            timer: 2000,
-            icon: "error",
-            showConfirmButton: false,
-          });
-          console.log("!!error fetch data!!");
-        }
+      this.form.validateFields((err, values) => {
+        this.signinAction({ err, values });
       });
     },
 
-    ...mapActions("users", ["getTokenAction"]),
+    ...mapActions("users", ["getTokenAction", "signinAction"]),
   },
 };
 </script>
