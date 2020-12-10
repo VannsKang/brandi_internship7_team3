@@ -511,6 +511,7 @@ export default {
   computed: {
     ...mapState({
       sellerInfo_header: ({ sellerInfo }) => sellerInfo.sellerInfo_header,
+      user_token: ({ users }) => users.user_token,
     }),
   },
 
@@ -527,7 +528,16 @@ export default {
 
     async getSellerInfo() {
       try {
-        const response = await this.$http.get(SELLER_DETAIL);
+        console.log(11111111111);
+        const headers = {
+          headers: {
+            Authorization: this.user_token,
+          },
+        };
+        const response = await this.$http.get(
+          `${SELLER_DETAIL}/${this.$route.params.id}`,
+          headers
+        );
         const validation = response && response.status === 200;
         !validation && new Error("cannot fetch the data");
         const result = response.data;
