@@ -56,8 +56,7 @@ class UserView:
         @app.route('/sign-in', methods=['POST'])
         @validate_params(
             Param('user_id', JSON, str, rules=[Pattern(r'[a-zA-Z0-9]')]),
-            Param('password', JSON, str,
-                  rules=[Pattern(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$')])
+            Param('password', JSON, str, required=True)
         )
         # 로그인
         def sign_in(*args):
