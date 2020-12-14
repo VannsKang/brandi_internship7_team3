@@ -7,7 +7,7 @@
 
 
 
-![](https://www.brandi.co.kr/static/20.09.01/images/logo@3x.png)
+![](https://www.brandi.co.kr/static/3.44.19/images/og-brandi.jpg)
 
 ## 👜 프로젝트 소개
 >**브랜디**는 2014년 12월에 설립되어 모바일과 소셜미디어, 패션산업을 융합한 이커머스 모델을 개발 중인 패션 이커머스 스타트업입니다.
