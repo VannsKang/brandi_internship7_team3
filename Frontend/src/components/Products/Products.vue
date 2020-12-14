@@ -6,7 +6,6 @@
       <div class="search-date">
         <span class="date">조회 기간</span>
         <div class="input-date">
-          <!-- <input class="start-date" placeholder="클릭해주세요."> -->
           <a-date-picker class="start-date" @change="getStartDate" data-id="start_date" placeholder="클릭해주세요." />
           <span class="range">~</span>
           <a-date-picker class="end-date" @change="getEndDate" data-id="end_date" placeholder="클릭해주세요." />
@@ -16,7 +15,7 @@
       <span>셀러명</span>
       <div class="search-select">
         <input type="text" placeholder="검색어를 입력하세요." data-id="seller_name" @blur="searchInputData">
-        <select class="select">
+        <select class="select" @change="onChange($event)">
           <option value>Select</option>
           <option v-for="search in select_search" data-id=search.id :key="search.id">{{ search.name }}</option>
         </select>
@@ -52,7 +51,7 @@
       </div>
     </div>
     <div class="search-reset">
-      <button class="search" @click="submitData">검색</button>
+      <button class="search" @click.prevent="submitData">검색</button>
       <input type='reset' @click="resetData">
     </div>
   </div>
@@ -97,45 +96,47 @@
       </div>
 
     <div class ="table">
-      <span>전체 조회건 수 :  건</span>
+      <span>전체 조회건 수 : {{count}}건</span>
     </div>
     <div>
       <table id="product-list">
         <thead>
           <tr class="heading">
-            <th class="checkbox"><input type="checkbox" :indeterminate="indeterminate"
-                :checked="checkAll"
-                @change="onCheckAllChange"/></th>
-            <th width="120">등록일</th>
-            <th>대표이미지</th>
-            <th>상품명</th>
-            <th>상품코드</th>
-            <th>상품번호</th>
-            <th>셀러속성</th>
-            <th>셀러명</th>
-            <th>판매가</th>
-            <th>할인가</th>
-            <th>판매여부</th>
-            <th>진열여부</th>
-            <th>할인여부</th>
-            <th>구매하기</th>
+            <th width="110">등록일</th>
+            <th width ="100">대표이미지</th>
+            <th width="100">상품명</th>
+            <th width="70">상품코드</th>
+            <th width="70">상품번호</th>
+            <th width="70">셀러속성</th>
+            <th width="80">셀러명</th>
+            <th width="70">판매가</th>
+            <th width="70">할인가</th>
+            <th width="70">판매여부</th>
+            <th width="70">진열여부</th>
+            <th width="70">할인여부</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="row in rows">
-            <td>{{row.index}}</td>
             <td>{{row.created_at}}</td>
-            <td>{{row.thumbnail}}</td>
+            <td class="table-img">
+              <img :src="row.thumbnail" alt="">
+            </td>
             <td>{{row.name}}</td>
             <td>{{row.code}}</td>
             <td>{{row.number}}</td>
-            <td>{{row.seller_attribute_id}}</td>
+            <td>{{row.seller_attribute}}</td>
             <td>{{row.seller_name}}</td>
-            <td>{{row.discount}}</td>
-            <td>{{row.sell_info}}</td>
-            <td>{{row.show_info}}</td>
-            <td>{{row.sale_info}}</td>
-            <td>{{row.buy}}</td>
+            <td>{{row.price}}</td>
+            <td>{{row.price}}</td>
+            <td v-if="row.sell_info===1">판매</td>
+            <td v-if="row.sell_info===0">미판매</td>
+            <!-- <td>{{row.show_info}}</td> -->
+            <td v-if="row.show_info===1">진열</td>
+            <td v-if="row.show_info===0">미진열</td>
+            <!-- <td>{{row.sale_info}}</td> -->
+            <td v-if="row.sale_info===1">할인</td>
+            <td v-if="row.sale_info===0">미할인</td>
           </tr>
         </tbody>
       </table>
@@ -144,6 +145,7 @@
 </template>
 
 <script>
+import { mapState} from "vuex"
 
 export default {
   name: "Products",
@@ -151,11 +153,6 @@ export default {
 
   data() {
     return {
-      // state 관리
-      // seller_name: "",
-      // product_name: "",
-      // product_number: "",
-      // code: "",
       sell_info: [
         { id: 1, name: '판매'},
         { id: 0, name: '미판매'}
@@ -188,15 +185,14 @@ export default {
         { id: 50, name: "50개씩보기"}
       ],
       rows: [],
+      count: "",
       searchInput: {
         start_date: null,
         end_date:null,
         seller_attribute_id: 0,
-        seller_name:"",
         sell_info:0,
         show_info:0,
         sale_info:0
-        // search.id:""
       },
       resetData: {
         start_date: null,
@@ -210,13 +206,17 @@ export default {
     };
   },
 
+  computed:{
+    ...mapState({
+      user_token: ({ users }) => users.user_token,
+    })
+  },
+
   methods: {
 
     searchInputData(e) {
       const {id} = e.target.dataset
       const {value} = e.target
-      // console.log(id)
-      // console.log(e.target.value, "??????")
       this.searchInput={
         ...this.searchInput,
         [id]: value
@@ -234,49 +234,35 @@ export default {
       console.log(this.searchInput)
     },
 
-    resetData() {
-      this.resetData
+    onChange(event) {
+      console.log(event.target.value);
     },
-    // selectAttribute(e){
-    //   console.log(e.target.dataset.id)
-    //   this.attribute_id = e.target.dataset.id
-    //   console.log(this.attribute_id)
-    // },
 
-    // showInfo(e){
-    //   console.log(e.target.dataset.id)
-    //   this.show_info_id = e.target.dataset.id
-    //   console.log(this.show_info_id)
-    // },
+    showInfo(e){
+      console.log(e.target.dataset.id)
+    },
 
-    // sellInfo(e){
-    //   console.log(e.target.dataset.id)
-    //   this.sell_info_id = e.target.dataset.id
-    //   console.log(this.sell_info_id)
-
-    // },
-
-    // saleInfo(e){
-    //   console.log(e.target.dataset.id)
-    //   this.sale_info_id = e.target.dataset.id
-    //   console.log(this.sale_info_id)
-    // },
-
+    sellInfo(e){
+      console.log(e.target.dataset.id)
+    },
 
     async submitData(){
+      const headers = {
+        headers :{
+          Authorization: this.user_token
+        }
+      }
+
       console.log()
-      let query = "http://localhost:5000/master/product_list?offset=0&limit=10"
+      let query = "http://localhost:5000/master/product_list?offset=0&limit=40"
       Object.keys(this.searchInput).forEach(el => {
-        query += `?${el}=${this.searchInput[el]}`
+        query += `&${el}=${this.searchInput[el]}`
       } )
-      console.log(query)
-      // const response = await this.$http.get(`http://localhost:5000/master/product_list${this.query}&offset=0&limit=20`)
-      // // const response = await this.$http.get(`http://localhost:5000/master/product_list?offset=0&limit=10&seller_name=${this.seller_name?this.seller_name:"None"}&product_name=${this.product_name?this.product_name:"None"}&product_number=${this.product_number?this.product_number:"None"}&code=${this.code?this.code:"None"}&seller_attribute_id=${this.attribute_id?this.attribute_id:"None"}&sell_info=${this.sell_info_id?this.sell_info_id:"None"}&show_info=${this.show_info_id?this.show_info_id:"None"}&sale_info=${this.sale_info_id?this.sale_info_id:"None"}`)
-      // const {product_count, product_list} = response.data
-      // console.log(product_count, product_list)
-      // this.rows = product_list
-      // console.log(this.rows)
-      // function(e) {e.target.id}
+      const response = await this.$http.get(query, headers)
+      const {product_count, product_list} = response.data
+      this.rows = product_list
+      this.count = product_count.product_count
+      console.log(this.rows, "!@#!#!@#!!#!@#!3")
     },
   },
 };
@@ -291,7 +277,7 @@ export default {
 }
 
 .products-filter {
-    width: 1200px;
+    width: 100%;
     font-weight: 500;
     border: 3px #ccc solid;
     padding: 10px 25px 25px;
@@ -459,6 +445,7 @@ button:hover {
 .header-content {
   background-color: #e2e1e1;
   height:35px;
+  width: 120%;
   margin-left: -20px;
   margin-right: -20px;
   padding-left: 10px;
@@ -490,20 +477,20 @@ button:hover {
 }
 
 .select-pagination select {
-  position: absolute;
-  right:20px;
+  position: relative;
+  left:285%;
   height: 30px;
   border: 1px solid #ccc;
   padding-bottom: 10px;
   border-radius: 3px;
   padding: 2px 10px;
   font-size: 13px;
-  margin-top:2px;
+  margin-top:2.4px;
 }
 
 .product-excel {
-  position: absolute;
-  right:20px;
+  position: relative;
+  left:43%;
 }
 
 .product-excel button {
@@ -557,12 +544,27 @@ table {
   overflow-y: hidden;
 }
 
+.table{
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
 table th {
   text-align: left;
   color: black;
   padding: 8px;
+  font-size: 13px;
   border: 1px solid #ccc;
   background-color: #e2e1e1;
+}
+
+table td {
+  text-align: left;
+  color: black;
+  padding: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  font-weight: lighter;
 }
 
 .checkbox {
@@ -571,20 +573,18 @@ table th {
   border: 1px solid #ccc;
 }
 
-// table td {
-//   text-align: left;
-//   border: 1px solid #ccc;
-// }
-
-table tr:first-child td {
-background-color: #e2e1e1;
-}
-
 button:focus {
   color: #fff;
   background-color: #428bca;
   border-color: #357ebd;
 }
 
+.table-img {
+  width: 120px;
 
+  >img {
+    width: 100%;
+    height: auto;
+  }
+}
 </style>

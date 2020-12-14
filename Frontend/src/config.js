@@ -8,12 +8,12 @@ export const NAV_MENU_DATA = "http://localhost:9000/static/navmenu.json";
 // "http://localhost:9000/static/sellertype.json";
 
 // NOTE gyuwon's
-export const SIGNUP_API = "http://10.251.1.115:5000/sign-up";
-export const SIGNIN_API = "http://10.251.1.115:5000/sign-in";
+export const SIGNUP_API = "http://192.168.7.22:5000/sign-up";
+export const SIGNIN_API = "http://192.168.7.22:5000/sign-in";
 // NOTE donghyun's
-export const SELLERS_TABLE = "http://10.251.1.115:5000/master/seller_list";
-export const EXCEL_QUERY = "http://10.251.1.115:5000/seller_info/download";
-export const ACTION_QUERY = "http://10.251.1.115:5000/update/seller_status";
-export const SELLER_STATUS = "http://10.251.1.115:5000/seller_status";
-export const SELLER_ATTRIBUTE_ID = "http://10.251.1.115:5000/seller_attributes";
-export const SELLER_DETAIL = "http://10.251.1.115:5000/sellers";
+export const SELLERS_TABLE = "http://192.168.7.22:5000/master/seller_list";
+export const EXCEL_QUERY = "http://192.168.7.22:5000/seller_info/download";
+export const ACTION_QUERY = "http://192.168.7.22:5000/update/seller_status";
+export const SELLER_STATUS = "http://192.168.7.22:5000/seller_status";
+export const SELLER_ATTRIBUTE_ID = "http://192.168.7.22:5000/seller_attributes";
+export const SELLER_DETAIL = "http://192.168.7.22:5000/sellers";
