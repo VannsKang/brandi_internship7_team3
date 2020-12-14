@@ -64,8 +64,8 @@ button {
 .ant-page-header-heading {
   @include flexSet(null, "flex-end");
   &-title {
-    font-size: 26px;
     color: #666;
+    font-size: 26px;
   }
 
   &-sub-title {
@@ -113,8 +113,8 @@ button {
       > li {
         > ul {
           .ant-menu-item {
-            margin: 0 !important;
             height: 30px !important;
+            margin: 0 !important;
             line-height: 30px !important;
             &:hover {
               background: #444;

@@ -47,37 +47,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../../styles/mixin.scss";
-
-.signup-form {
-  .ant-form {
-    &-item {
-      margin-bottom: 8px;
-    }
-  }
-
-  &-title {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 5px;
-    > span:last-child {
-      font-size: 14px;
-      font-weight: 400;
-      color: rgb(30, 144, 255);
-    }
-  }
-
-  &-extra {
-    @include flexSet("flex-start", "center");
-    margin: -10px 0 50px;
-    font-size: 12px;
-    font-weight: 600;
-    color: rgb(30, 144, 255);
-
-    > span {
-      margin-left: 5px;
-    }
-  }
-}
-</style>
+<style src="./Singup-owner.scss" lang="scss" scoped />

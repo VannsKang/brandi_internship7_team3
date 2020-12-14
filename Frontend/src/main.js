@@ -2,6 +2,7 @@ import Vue from "vue";
 import Antd from "ant-design-vue";
 import VueRouter from "vue-router";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 // LINK Style
 import "reset-css";
@@ -17,8 +18,9 @@ import store from "./store";
 Vue.use(VueRouter);
 Vue.use(Antd);
 Vue.prototype.$http = axios;
+Vue.prototype.$alert = Swal;
 
-const router = new VueRouter({ routes: Routes, mode: "history" });
+export const router = new VueRouter({ routes: Routes, mode: "history" });
 
 new Vue({
   el: "#app",

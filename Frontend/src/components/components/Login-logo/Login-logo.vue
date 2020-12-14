@@ -22,19 +22,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../../styles/mixin.scss";
-
-.logo-section {
-  @include flexSet("center", "center");
-
-  .logo {
-    width: 130px;
-    margin-bottom: 40px;
-
-    img {
-      width: 100%;
-    }
-  }
-}
-</style>
+<style src="./Login-logo.scss" lang="scss" scoped />

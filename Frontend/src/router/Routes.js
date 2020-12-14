@@ -4,10 +4,13 @@ import Main from "../components/Main/Main.vue";
 import Sellers from "../components/Sellers/Sellers.vue";
 import SellerInfo from "../components/SellerInfo/SellerInfo.vue";
 import Products from "../components/Products/Products.vue";
+import Page403 from "../components/components/Page-403/Page-403.vue";
+import ProductEnroll from "../components/ProductEnroll/Product-enroll.vue";
 
 export default [
   { path: "/", name: "Login", component: Login },
   { path: "/signup", name: "Signup", component: Signup },
+  { path: "/403", name: "Page403", component: Page403 },
   {
     path: "/:name",
     name: "Main",
@@ -27,6 +30,11 @@ export default [
         path: "products",
         name: "Products",
         component: Products,
+      },
+      {
+        path: "product_enroll",
+        name: "Product_enroll",
+        component: ProductEnroll,
       },
     ],
   },

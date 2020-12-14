@@ -4,23 +4,23 @@
     <div class="sellers-content-main-pagination-button">
       <a-button
         data-id="minus"
-        @click="controlPages"
-        :disabled="page_number <= 1"
+        @click="controlPagesAction"
+        :disabled="page_number <= 1 || max_page <= 1"
       >
         <a-icon type="left" />
       </a-button>
       <!-- SECTION pagenation number -->
-      <a-input-number v-model="page_number" />
+      <a-input-number :value="page_number" />
 
       <a-button
         data-id="plus"
-        @click="controlPages"
-        :disabled="page_number >= Math.ceil(seller_count / currentPagination)"
+        @click="controlPagesAction"
+        :disabled="page_number >= max_page"
       >
         <a-icon type="right" />
       </a-button>
     </div>
-    <span>of {{ Math.ceil(seller_count / currentPagination) }} | View</span>
+    <span>of {{ max_page }} | View</span>
     <a-select
       class="sellers-content-main-pagination-group"
       :value="currentPagination"
@@ -39,79 +39,32 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 
 export default {
   name: "Sellers-pagination",
 
-  props: {
-    controlPages: {
-      type: Function,
-      required: true,
-    },
-
-    controlPagesDrop: {
-      type: Function,
-      required: true,
-    },
-
-    page_number: {
-      type: Number,
-      required: true,
-    },
-
-    seller_count: {
-      type: Number,
-      required: true,
-    },
-
-    currentPagination: {
-      type: Number,
-      required: true,
-    },
-  },
+  props: {},
 
   data() {
     return {};
   },
 
-  methods: {},
+  methods: {
+    // SECTION vuex
+    ...mapActions("sellers", ["controlPagesAction", "controlPagesDrop"]),
+  },
 
   computed: {
     ...mapState({
       pageControl: ({ sellers }) => sellers.pageControl,
+      page_number: ({ sellers }) => sellers.page.page_number,
+      currentPagination: ({ sellers }) => sellers.page.currentPagination,
+      seller_count: ({ sellers }) => sellers.seller_count,
     }),
+    ...mapGetters("sellers", ["max_page", "update_page"]),
   },
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../../styles/mixin.scss";
-
-.sellers-content-main-pagination {
-  @include flexSet("flex-start", "center");
-  margin: 10px;
-  color: #111;
-
-  &-button {
-    width: 110px;
-    margin: 0 10px;
-    @include flexSet("space-between", "center");
-
-    > button {
-      padding: 8px;
-      font-size: 9px;
-      @include flexSet("center", "center");
-    }
-
-    .ant-input-number {
-      width: 45px;
-    }
-  }
-
-  &-group {
-    margin: 0 10px;
-    width: 80px;
-  }
-}
-</style>
+<style src="./Sellers-pagination.scss" lang="scss" scoped />

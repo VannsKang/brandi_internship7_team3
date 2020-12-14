@@ -3,13 +3,9 @@
     <div>
       <div>
         <span>
-          회사명 : (주)브랜디 | 주소 : (06223) 서울특별시 강남구 테헤란로 32길
-          26 청송빌딩 | 사업자등록번호 : 220-88-93187 I 통신판매업신고 :
-          2016-서울강남-00359호
+          {{ footer_text }}
         </span>
-        <span>
-          이메일 : help@brandi.co.kr | 2020 © brandi inc.
-        </span>
+        <span> {{ email }} | {{ copyright }} </span>
       </div>
       <div>
         <span>이용약관</span> |
@@ -20,49 +16,27 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
+
 export default {
   name: "Login-footer",
+
+  mounted() {
+    this.updateFooterAction();
+  },
+
+  computed: {
+    ...mapState({
+      footer_text: ({ navmenus }) => navmenus.footer_text,
+      copyright: ({ navmenus }) => navmenus.copyright,
+      email: ({ navmenus }) => navmenus.email,
+    }),
+  },
+
+  methods: {
+    ...mapActions("navmenus", ["updateFooterAction"]),
+  },
 };
 </script>
 
-<style lang="scss" scoped>
-@import "../../../styles/mixin.scss";
-
-.login-footer {
-  text-align: left;
-  width: 100%;
-  height: 107px;
-  padding: 20px 0;
-  background: #202020;
-  color: #999;
-  @include flexSet("center", "center", column);
-
-  > div {
-    div {
-      margin: 0 60px;
-      font-size: 11px;
-      letter-spacing: -0.5px;
-      line-height: 1.8;
-
-      &:first-child {
-        span {
-          display: block;
-        }
-      }
-
-      &:last-child {
-        font-size: 12px;
-        margin-top: 10px;
-        color: #fff;
-
-        span {
-          &:last-child {
-            font-weight: 700;
-            text-decoration: underline;
-          }
-        }
-      }
-    }
-  }
-}
-</style>
+<style src="./Login-footer.scss" lang="scss" scoped />

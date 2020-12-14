@@ -249,8 +249,8 @@ class UserService:
             'zipcode'             : found_seller_info['zipcode'],
             'first_address'       : found_seller_info['first_address'],
             'last_address'        : found_seller_info['last_address'],
-            'open_time'           : found_seller_info['open_time'],
-            'close_time'          : found_seller_info['close_time'],
+            'open_time'           : str(found_seller_info['open_time']),
+            'close_time'          : str(found_seller_info['close_time']),
             'delivery'            : found_seller_info['delivery'],
             'refund'              : found_seller_info['refund'],
         }
