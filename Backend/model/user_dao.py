@@ -116,8 +116,10 @@ class UserDao:
                         FROM seller_status_actions AS ssa
                         INNER JOIN seller_actions AS sa ON ssa.action_id = sa.seller_action_id
                         GROUP BY ssa.status_id) sa ON s.seller_status_id = sa.status_id
+                        
                 
                 WHERE end_date='9999-12-31' AND is_deleted=0
+                AND ac.class_id=2
             """
 
             if 'id' in filter_data and filter_data['id']:
@@ -135,7 +137,7 @@ class UserDao:
             if 'owner_name' in filter_data and filter_data['owner_name']:
                 query += ' AND s.owner_name = %(owner_name)s'
 
-            if 'seller_status_id' in filter_data and filter_data['seller_status_id']:
+            if 'seller_status_id' in filter_data and 'Select' != filter_data['seller_status_id']:
                 query += ' AND ss.seller_status_id = %(seller_status_id)s'
 
             if 'phone_number' in filter_data and filter_data['phone_number']:
@@ -144,7 +146,7 @@ class UserDao:
             if 'email' in filter_data and filter_data['email']:
                 query += ' AND s.owner_email = %(email)s'
 
-            if 'seller_attribute_id' in filter_data and filter_data['seller_attribute_id']:
+            if 'seller_attribute_id' in filter_data and 'Select' != filter_data['seller_attribute_id']:
                 query += ' AND sat.seller_attribute_id = %(seller_attribute_id)s'
 
             if 'start_time' in filter_data \
@@ -199,6 +201,7 @@ class UserDao:
                             GROUP BY ssa.status_id) sa ON s.seller_status_id = sa.status_id
     
                 WHERE end_date='9999-12-31' AND is_deleted=0
+                AND ac.class_id=2
             """
 
             if 'id' in filter_data and filter_data['id']:
@@ -216,7 +219,7 @@ class UserDao:
             if 'owner_name' in filter_data and filter_data['owner_name']:
                 query += ' AND s.owner_name = %(owner_name)s'
 
-            if 'seller_status_id' in filter_data and filter_data['seller_status_id']:
+            if 'seller_status_id' in filter_data and 'Select' != filter_data['seller_status_id']:
                 query += ' AND ss.seller_status_id = %(seller_status_id)s'
 
             if 'phone_number' in filter_data and filter_data['phone_number']:
@@ -225,7 +228,7 @@ class UserDao:
             if 'email' in filter_data and filter_data['email']:
                 query += ' AND s.owner_email = %(email)s'
 
-            if 'seller_attribute_id' in filter_data and filter_data['seller_attribute_id']:
+            if 'seller_attribute_id' in filter_data and 'Select' != filter_data['seller_attribute_id']:
                 query += ' AND sat.seller_attribute_id = %(seller_attribute_id)s'
 
             if 'start_time' in filter_data \

@@ -204,7 +204,7 @@ class UserView:
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
-                print(filter_data)
+
                 seller_info = user_service.get_seller_list(filter_data, conn)
 
                 created_excel = user_service.create_excel_seller_info(seller_info)
