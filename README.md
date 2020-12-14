@@ -1,7 +1,5 @@
 # 안녕하세요! 브랜디 인턴십 7기 3팀입니다 <img src="https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/wave.gif" width="30px">
 
-# 브랜디 인턴십 7기 3팀 
-
 >#### Trello Link https://trello.com/b/IuhnSddJ/%EB%B8%8C%EB%9E%9C%EB%94%94%EC%9D%B8%ED%84%B4-7%EC%B0%A8-3%ED%8C%80
 >#### Github Link https://github.com/VannsKang/brandi_internship7_team3
 >#### Youtube Link 
@@ -78,14 +76,26 @@
 
 ### 🧤 Frontnd
 
-### 메인 메뉴 섹션 🧔🏻
-+ 네비바 효과 구현
-
 ### 로그인/ 회원가입 🧔🏻
-+ 카카오 로그인 / 회원가입 구현
++ 로그인/회원가입 validator 구현
++ 관련 분기별 confirm 팝업 alert 구현
++ vuex persist 로 token 유지 및 체크
++ token 없을시 403 리다이렉트 구현
+
+### 메인 메뉴 섹션 🧔🏻
++ 로그아웃 구현
++ token 있을시 login 화면에서 다시 메뉴화면으로 redirect
++ seller_status 유무 체크후 API 호출
++ menu_item, footer 전역 관리
 
 ### 셀러 리스트 🧔🏻
-+ url parameter를 이용한 동적라우팅 기능
++ 페이지네이션 구현 (2개 동기화)
++ 페이지 그룹 구현
++ 테이블 개별 조건별 엔터 검색 구현
++ 테이블 복수 조건별 검색 및 리셋 구현
++ 날짜 조건 구현
++ 셀러 스테이터스 갱신구현(6가지 상태)
++ 셀러 상세 페이지 라우터 연결
 
 ### 셀러 상세 페이지 구현 🧑🏻 
 + 비밀번호 변경 모달창
@@ -116,4 +126,7 @@
 + Google 계정 인증 / 존재하는 계정이면 정보 업데이트
 
 ### 상품 등록 페이지 API 구현 🧔🏻
-+ Kakao 계정 인증 / 존재하는 계정이면 정보 업데이트
++ color, size, 1st category API 구현
++ querystring 이용 2nd category 구현
++ 다중 테이블에 상품 등록 구현
+
