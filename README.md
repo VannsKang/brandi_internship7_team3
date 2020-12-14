@@ -19,7 +19,7 @@
 + 강수명
 
 ### 🧑🏻👩🏻 BackEnd
-+ 김동현
++ 김동현 [Github 주소](https://github.com/Daphne-dev)
 + 성규원
 
 ## 👜 프로젝트 기간
@@ -61,7 +61,7 @@
 + Python
 + Flask / Flask-Cors
 + MySQL
-+ Workbench
++ MySQL Workbench
 + PyJWT
 + Bcrypt
 + AWS S3
@@ -94,15 +94,17 @@
 
 ### 🧤 Back End
 
-### 셀러 리스트 표출 API 구현 🧑🏻 
-+ 숙소 상세 정보 반환
+### 셀러 리스트 페이지 🧑🏻 
++ 셀러 리스트 API(컬럼 별 검색 기능 및 페이지네이션 기능)
++ 셀러 속성 API
++ 셀러 상태 API
 
 ### 액션에 따른 셀러 상태 변화 API 구현 🧑🏻 
-
-+ Navi.로 조회한 조건에 맞는 숙소 목록 반환
++ 특정 액션을 취하면 그에 대한 셀러의 상태 변화 API 구현
 
 ### 셀러 상세 페이지 API 구현 (AWS S3 연동) 🧑🏻 
-+ 필터링 모달 인자 반환을 위한 View
++ 셀러 상세 정보 API
++ AWS S3와 연동하여 이미지 업로드 구현
 
 ### 로그인 / 회원가입 API 구현 👩🏻
 + 계정 생성 구현 / 이메일, 비밀번호 정규화
