@@ -54,6 +54,7 @@ const actions = {
 
       // NOTE backend
       const response = await axios.post(SIGNIN_API, payload.values);
+      console.log(response, "!!!!!!!!!!!!!!!!!!!!!");
       const validation = response && response.status === 200;
       !validation && new Error("cannot fetch the data");
       const { message, token } = response.data;
@@ -75,7 +76,18 @@ const actions = {
           router.push("/main/seller")
         );
     } catch (error) {
-      console.log(`!!error fetch data!!: ${error}`);
+      console.log(`!!error fetch data!!: ${error.response.data.message}`);
+      if (
+        error.response.data.message === "아이디와 비밀번호를 다시 확인해주세요."
+      )
+        return Swal.fire({
+          title: "비밀번호 오류!",
+          text: "비밀번호를 다시 확인해주세요!",
+          timer: 2000,
+          icon: "error",
+          showConfirmButton: false,
+        });
+
       Swal.fire({
         title: "존재하지 않는 회원입니다!",
         timer: 2000,
