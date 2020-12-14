@@ -57,7 +57,7 @@ class UserView:
         @validate_params(
             Param('user_id', JSON, str, rules=[Pattern(r'[a-zA-Z0-9]')]),
             Param('password', JSON, str,
-                  rules=[Pattern(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$')])
+                  required=True)
         )
         # 로그인
         def sign_in(*args):
@@ -206,7 +206,7 @@ class UserView:
             try:
                 conn = get_connection()
                 filter_data = request.get_json()
-                print(filter_data)
+
                 seller_info = user_service.get_seller_list(filter_data, conn)
 
                 created_excel = user_service.create_excel_seller_info(seller_info)

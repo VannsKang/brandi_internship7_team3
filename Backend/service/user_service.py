@@ -78,7 +78,8 @@ class UserService:
         #     raise InvalidUserError('권한이 없는 사용자입니다.', 403)
 
         seller_list = self.user_dao.get_seller_list(filter_data, conn)
-
+        # print(seller_list['seller_action_id'])
+        # print(seller_list['seller_action'])
         columns = [
             {
                 'title': '번호',
@@ -140,15 +141,16 @@ class UserService:
                 'phone_number'     : seller['phone_number'],
                 'email'            : seller['email'],
                 'created_at'       : seller['created_at'].strftime('%Y-%m-%d %H:%M:%S'),
-                'seller_actions'   : [{
+                'seller_actions'   : sorted([{
                     'id'  : seller_action_id,
                     'name': seller_action
-                } for seller_action_id, seller_action
-                    in zip(seller['seller_action_id'].split(','), seller['seller_action'].split(','))]
+                } for seller_action_id, seller_action in
+                    zip(seller['seller_action_id'].split(','), seller['seller_action'].split(','))],
+                    key=lambda seller_action:seller_action['id'])
                 if seller['seller_action_id'] else None
             } for seller in seller_list]
         }
-        
+
         return data
 
     def create_excel_seller_info(self, seller_info):
@@ -205,11 +207,7 @@ class UserService:
 
         account_info['modifier_id'] = modifier_id
 
-        now = self.user_dao.get_now_time(conn)
-        account_info['now'] = now['now']
-
         previous_seller_info = self.user_dao.get_seller(account_info, conn)
-        previous_seller_info['now'] = now['now']
 
         if previous_seller_info['is_deleted']:
             raise DeleteSellerError('삭제된 셀러 입니다.', 400)
@@ -220,6 +218,9 @@ class UserService:
             account_info['is_deleted'] = 1
         else:
             account_info['seller_status_id'] = seller_status['seller_status_id']
+
+        now = self.user_dao.get_now_time(conn)
+        previous_seller_info['now'] = now['now']
 
         account_info = dict(previous_seller_info, **account_info)
 
@@ -258,20 +259,15 @@ class UserService:
 
     def update_seller_info(self, seller_info, seller_image, conn):
 
-        # 현재 유저 정보 가져오기
         previous_seller_info = self.user_dao.get_seller(seller_info, conn)
 
-        # 삭제된 셀러일 경우 에러 처리
         if previous_seller_info['is_deleted']:
             raise DeleteSellerError('삭제된 셀러 입니다.', 400)
 
-        # 현재 시간 불러오기 및 셀러 정보에 저장
         now = self.user_dao.get_now_time(conn)
         now = now['now']
-        seller_info['now'] = now
-
-        # 업데이트 전 가장 최신의 셀러 정보에 현재 시간 저장
         previous_seller_info['now'] = now
+        seller_info['now'] = now
 
         allowed_extensions = ['image/jpg', 'image/jpeg', 'image/png']
 
@@ -314,17 +310,14 @@ class UserService:
             ContentType=background_image_extension
         )
 
-        # 셀러 이미지 및 배경이미지 경로 셀러 정보에 저장
         s3_bucket_url = "https://brandistorage.s3.ap-northeast-2.amazonaws.com/"
         seller_info['seller_profile'] = s3_bucket_url + seller_profile_image_url
         seller_info['seller_background'] = s3_bucket_url + seller_background_image_url
 
         seller_info = dict(previous_seller_info, **seller_info)
 
-        # 수정하려는 셀러 정보 생성
         self.user_dao.insert_seller_info(seller_info, conn)
 
-        # 이전 셀러 정보 이력 관리
         updated_seller = self.user_dao.update_seller_info(previous_seller_info, conn)
 
         return updated_seller

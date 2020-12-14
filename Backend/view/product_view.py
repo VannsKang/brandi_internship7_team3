@@ -79,11 +79,15 @@ class ProductView:
                 
             except KeyError:
                 conn.rollback()
-                return jsonify({'message': '상품 정보에 유효하지 않은 키 값 전송'}), 404
+                return jsonify({'message': '상품 등록에 유효하지 않은 키 값 전송'}), 404
             except TypeError:
+<<<<<<< Updated upstream
                 return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
             except Exception as e:
                 return jsonify({'message': 'error {}'.format(e)}), 500
+=======
+                return jsonify({'message': '상품 등록을 위한 값에 비어있는 값 전송'}), 400
+>>>>>>> Stashed changes
             except ApiError as e:
                 conn.rollback()
                 return jsonify({'message': format(e.message)}), e.status_code
