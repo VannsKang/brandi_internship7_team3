@@ -3,7 +3,7 @@
 >#### Trello Link https://trello.com/b/IuhnSddJ/%EB%B8%8C%EB%9E%9C%EB%94%94%EC%9D%B8%ED%84%B4-7%EC%B0%A8-3%ED%8C%80
 >#### Github Link https://github.com/VannsKang/brandi_internship7_team3
 >#### Google Slide Link https://docs.google.com/presentation/d/1CLYHCH_ac6gYLRRQ3STON8rJOTeIiwCaINFPClDm4yI/edit?usp=sharing
->#### Youtube Link 
+>#### Youtube Link https://youtu.be/v2FtKqPEr_A
 
 
 
