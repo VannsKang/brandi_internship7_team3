@@ -581,6 +581,7 @@ button:focus {
 
 .table-img {
   width: 120px;
+  padding-top:17px;
 
   >img {
     width: 100%;
