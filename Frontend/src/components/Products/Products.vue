@@ -102,15 +102,15 @@
       <table id="product-list">
         <thead>
           <tr class="heading">
-            <th width="120">등록일</th>
-            <th width="120">대표이미지</th>
+            <th width="110">등록일</th>
+            <th width ="100">대표이미지</th>
             <th width="100">상품명</th>
-            <th width="60">상품코드</th>
-            <th width="60">상품번호</th>
+            <th width="70">상품코드</th>
+            <th width="70">상품번호</th>
             <th width="70">셀러속성</th>
             <th width="80">셀러명</th>
-            <th width="80">판매가</th>
-            <th width="80">할인가</th>
+            <th width="70">판매가</th>
+            <th width="70">할인가</th>
             <th width="70">판매여부</th>
             <th width="70">진열여부</th>
             <th width="70">할인여부</th>
@@ -274,66 +274,10 @@ export default {
     font-weight: lighter;
     font-size: 25px;
     padding: 20px 20px;
-
-    button {
-    border: 1px solid #ccc;
-    background: white;
-    padding: 5px 10px;
-    margin: 0 1px;
-    border-radius: 3px;
-    }
-
-    input {
-      border: 1px solid #ccc;
-    }
-
-
-    button:hover {
-      cursor: pointer;
-      background-color: rgb(224, 223, 223);
-      border-color: rgb(175, 174, 174);
-    }
-
-    table {
-      width: 99%;
-      border-collapse: collapse;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      font-weight: 600;
-      background-color: white;
-      overflow-x: auto;
-      overflow-y: hidden;
-    }
-
-
-    table th {
-      text-align: left;
-      color: black;
-      padding: 8px;
-      font-size: 13px;
-      border: 1px solid #ccc;
-      background-color: #e2e1e1;
-    }
-
-    table td {
-      text-align: left;
-      color: black;
-      padding: 8px;
-      border: 1px solid #ccc;
-      font-size: 13px;
-      font-weight: lighter;
-    }
-
-    button:focus {
-      color: #fff;
-      background-color: #428bca;
-      border-color: #357ebd;
-    }
-
 }
 
 .products-filter {
-    width: 1200px;
+    width: 100%;
     font-weight: 500;
     border: 3px #ccc solid;
     padding: 10px 25px 25px;
@@ -356,6 +300,8 @@ export default {
 .range {
     text-align: center;
     font-size: 18px;
+    // border-color: #ccc;
+    // background: #ccc;
     padding: 7px 17px 7px 17px;
     margin: auto -5px;
 }
@@ -366,6 +312,17 @@ export default {
     width:40%;
 }
 
+button {
+  border: 1px solid #ccc;
+  background: white;
+  padding: 5px 10px;
+  margin: 0 1px;
+  border-radius: 3px;
+}
+
+input {
+  border: 1px solid #ccc;
+}
 
 .input-date {
   display: inline-block;
@@ -457,6 +414,11 @@ export default {
   border-color: rgb(175, 174, 174);
 }
 
+button:hover {
+  cursor: pointer;
+  background-color: rgb(224, 223, 223);
+  border-color: rgb(175, 174, 174);
+}
 
 .search {
   color: #fff;
@@ -483,6 +445,7 @@ export default {
 .header-content {
   background-color: #e2e1e1;
   height:35px;
+  width: 120%;
   margin-left: -20px;
   margin-right: -20px;
   padding-left: 10px;
@@ -514,8 +477,8 @@ export default {
 }
 
 .select-pagination select {
-  position: absolute;
-  right: 20px;
+  position: relative;
+  left:285%;
   height: 30px;
   border: 1px solid #ccc;
   padding-bottom: 10px;
@@ -526,8 +489,8 @@ export default {
 }
 
 .product-excel {
-  position: absolute;
-  right:20px;
+  position: relative;
+  left:43%;
 }
 
 .product-excel button {
@@ -570,13 +533,39 @@ button.apply {
   font-weight: normal;
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: white;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 
 .table{
   font-weight: bold;
   margin-bottom: 5px;
 }
 
+table th {
+  text-align: left;
+  color: black;
+  padding: 8px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  background-color: #e2e1e1;
+}
 
+table td {
+  text-align: left;
+  color: black;
+  padding: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  font-weight: lighter;
+}
 
 .checkbox {
   padding-right:2px;
@@ -584,9 +573,14 @@ button.apply {
   border: 1px solid #ccc;
 }
 
+button:focus {
+  color: #fff;
+  background-color: #428bca;
+  border-color: #357ebd;
+}
 
 .table-img {
-  width: 160px;
+  width: 120px;
 
   >img {
     width: 100%;
