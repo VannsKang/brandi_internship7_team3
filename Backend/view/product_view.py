@@ -128,12 +128,12 @@ class ProductView:
             try:
                 product_info = request.get_json()
                 new_product = product_service.add_new_product(product_info, conn)
-
+                
             except KeyError:
                 conn.rollback()
-                return jsonify({'message': '상품 정보에 유효하지 않은 키 값 전송'}), 404
+                return jsonify({'message': '상품 정보 추가에 유효하지 않은 키 값 전송'}), 404
             except TypeError:
-                return jsonify({'message': '셀러 속성 조회에 비어있는 값 전송'}), 400
+                return jsonify({'message': '상품 정보 추가에 비어있는 값 전송'}), 400
             except ApiError as e:
                 conn.rollback()
                 return jsonify({'message': format(e.message)}), e.status_code
