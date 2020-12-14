@@ -217,6 +217,14 @@ export const actions = {
 
   async updateAction({ commit, state, rootState }, e) {
     commit("changeLoadingTrue");
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "ant-btn ant-btn-primary",
+        cancelButton: "ant-btn ant-btn-danger",
+      },
+      buttonsStyling: false,
+    });
+
     const { id, btn } = e.target.dataset;
     console.log(id, btn);
     const actionBody = {
@@ -228,10 +236,52 @@ export const actions = {
       limit: state.page.currentPagination,
     };
     // NOTE action applied
-    await actions.queryAction({ commit, rootState }, ACTION_QUERY, actionBody);
-    // NOTE update table with reset pagenumber
-    commit("resetPage");
-    actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
+    if (+btn === 7) {
+      const firstAlert = await Swal.fire({
+        title: "퇴점 확정 처리",
+        text: "퇴점 확정 하시겠습니까?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "예",
+        cancelButtonText: "아니오",
+      });
+      if (firstAlert.isConfirmed) {
+        swalWithBootstrapButtons.fire({
+          title: "퇴점 처리 완료",
+          text: "퇴점 처리 되었습니다.",
+          icon: "error",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        await actions.queryAction(
+          { commit, rootState },
+          ACTION_QUERY,
+          actionBody
+        );
+        commit("resetPage");
+        actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
+      }
+
+      if (firstAlert.dismiss === Swal.DismissReason.cancel) {
+        swalWithBootstrapButtons.fire({
+          title: "퇴점 처리 취소",
+          text: "퇴점 처리 취소 되었습니다.",
+          icon: "info",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        commit("changeLoadingFalse");
+      }
+    } else {
+      await actions.queryAction(
+        { commit, rootState },
+        ACTION_QUERY,
+        actionBody
+      );
+      // NOTE update table with reset pagenumber
+      commit("resetPage");
+      actions.queryTable({ commit, rootState }, SELLERS_TABLE, updateBody);
+    }
   },
 
   // TODO checkbox control
